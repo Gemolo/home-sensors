@@ -1,0 +1,17 @@
+{
+  "name": "kevin/home-sensors",
+  "type": "project",
+  "authors": [
+    {
+      "name": "kevin",
+      "email": "kevingemolo@gmail.com"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "ext-curl": "*",
+    "klein/klein": "^2",
+    "twig/twig": "^2.0",
+    "php": "^7.3"
+  }
+}

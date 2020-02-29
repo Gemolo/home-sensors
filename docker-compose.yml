@@ -1,0 +1,44 @@
+version: '3'
+services:
+
+  gpio:
+    build:
+      context: gpio
+    ports:
+      - 5000:5000
+    volumes:
+      - /sys:/sys
+      - ./gpio:/usr/src/app
+    devices:
+      - /dev/mem:/dev/mem
+      - /dev/gpiomem:/dev/gpiomem
+
+  php-fpm:
+    image: php:7-fpm
+    ports:
+      - 9000
+    volumes:
+      - ./php:/var/www
+      - /sys:/sys
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - 4561:80
+    volumes:
+      - ./php:/var/www
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/sites/:/etc/nginx/sites-available
+      - ./nginx/conf.d/:/etc/nginx/conf.d
+    depends_on:
+      - php-fpm
+      - gpio
+      - db
+
+  db:
+    image: jsurf/rpi-mariadb
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=sensori
+    volumes:
+      - ./msql/db:/var/lib/mysql

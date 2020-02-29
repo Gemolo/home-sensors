@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home sensors</title>
+    <script
+            src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+</head>
+<body>
+{% macro cell(id, name) %}
+    <div class="col-sm">
+        <div class="card">
+            <img src="/sensori/img/{{ id }}.png" height="128px" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">{{ name }}</h5>
+                <p class="card-text sens" id="sens-{{ id }}">N/A</p>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+<div class="container">
+<h1>Sensori</h1>
+    <div id="sensori" class="row">
+        {{  _self.cell('fuoco', 'Fuoco') }}
+        {{  _self.cell('gas', 'Gas') }}
+        {{  _self.cell('luce', 'Luce') }}
+        {{  _self.cell('pioggia', 'Pioggia') }}
+        {{  _self.cell('pir0', 'Movimento') }}
+        {{  _self.cell('metro', 'Metro') }}
+    </div>
+</div>
+
+<style>
+    #sensori, .container {
+        margin-top: 32px;
+    }
+    .card {
+        width: 18rem;
+        margin: 16px;
+    }
+    .sens {
+        font-size: 24px;
+    }
+</style>
+
+<script>
+    function sensori() {
+        $.ajax({
+            url: "/sensori/api/sensors",
+            success: function (result) {
+                for (k in result) {
+                    p = $('#sens-' + k);
+                    valore = result[k];
+                    if(k === "metro") {
+                        valore = valore.toFixed(1) + " cm";
+                    }
+                    p.text(valore);
+                    p.css('color', 'red');
+                    p.delay(100).queue(function (next) {
+                        $(this).css('color', 'black');
+                        next();
+                    });
+                }
+            }
+        });
+    }
+
+    sensori();
+    setInterval(function () {
+        sensori();
+    }, 500);
+</script>
+</body>
+</html>
