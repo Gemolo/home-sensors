@@ -16,6 +16,6 @@ use Twig\Loader\FilesystemLoader;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$loader = new FilesystemLoader(__DIR__ . '/../twig');
-$twig = new Environment($loader);
-echo $twig->render('index.twig', []);
+\HomeSensors\DatabaseUtils::connect();
+
+\HomeSensors\TwigUtils::renderPage('index.twig', "Home");

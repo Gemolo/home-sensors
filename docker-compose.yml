@@ -14,7 +14,8 @@ services:
       - /dev/gpiomem:/dev/gpiomem
 
   php-fpm:
-    image: php:7-fpm
+    build:
+      context: php-fpm
     ports:
       - 9000
     volumes:
@@ -40,5 +41,6 @@ services:
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=sensori
+      - MYSQL_DATABASE=HomeSensors
     volumes:
-      - ./msql/db:/var/lib/mysql
+      - ./mysql/db:/var/lib/mysql

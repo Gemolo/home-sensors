@@ -8,10 +8,17 @@
     }
   ],
   "minimum-stability": "stable",
+  "autoload": {
+    "psr-4": {
+      "HomeSensors\\": "src/"
+    }
+  },
   "require": {
+    "rakit/validation" : "^1",
     "ext-curl": "*",
     "klein/klein": "^2",
     "twig/twig": "^2.0",
-    "php": "^7.3"
+    "php": "^7.3",
+    "ext-pdo": "*"
   }
 }
