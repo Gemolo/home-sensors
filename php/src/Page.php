@@ -8,20 +8,24 @@ use Rakit\Validation\Validator;
 
 abstract class Page {
 
-    protected abstract function validation(Validator $validator): Validation;
+    protected abstract function validation(Validator $validator): ?Validation;
 
     protected abstract function exec();
 
     public function __invoke() {
         $validator = new Validator();
         $validation = $this->validation($validator);
-        $validation->validate();
-        if ($validation->fails()) {
-            $errors = $validation->errors();
-            http_response_code(400);
-            echo "<pre>";
-            print_r($errors->firstOfAll());
-            echo "</pre>";
+        if ($validation !== null) {
+            $validation->validate();
+            if ($validation->fails()) {
+                $errors = $validation->errors();
+                http_response_code(400);
+                echo "<pre>";
+                print_r($errors->firstOfAll());
+                echo "</pre>";
+            } else {
+                $this->exec();
+            }
         } else {
             $this->exec();
         }

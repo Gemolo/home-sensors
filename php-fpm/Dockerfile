@@ -1,3 +1,2 @@
 FROM php:7-fpm
-RUN pecl install pdo \
-    && docker-php-ext-enable pdo
+RUN docker-php-ext-install pdo pdo_mysql

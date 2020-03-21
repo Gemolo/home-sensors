@@ -19,6 +19,8 @@
     "klein/klein": "^2",
     "twig/twig": "^2.0",
     "php": "^7.3",
-    "ext-pdo": "*"
+    "ext-pdo": "*",
+    "pusher/pusher-push-notifications": "^1.0",
+    "ext-json": "*"
   }
 }

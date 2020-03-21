@@ -12,6 +12,29 @@
 </head>
 <body>
 <div class="container">
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.12.0/firebase-app.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+         https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/7.12.0/firebase-analytics.js"></script>
+
+    <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyDGzDjkKT3aQMX5dUBhGbfozodub8tvMPE",
+            authDomain: "sensori-271610.firebaseapp.com",
+            databaseURL: "https://sensori-271610.firebaseio.com",
+            projectId: "sensori-271610",
+            storageBucket: "sensori-271610.appspot.com",
+            messagingSenderId: "806865718066",
+            appId: "1:806865718066:web:c78d6bf2de62081629652b",
+            measurementId: "G-8MG4PTD1PJ"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        firebase.analytics();
+    </script>
     {% block content %}
     {% endblock %}
 </div>

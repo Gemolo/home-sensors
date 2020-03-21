@@ -44,3 +44,7 @@ services:
       - MYSQL_DATABASE=HomeSensors
     volumes:
       - ./mysql/db:/var/lib/mysql
+
+  checker:
+    build:
+      context: checker
