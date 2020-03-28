@@ -21,6 +21,7 @@
     "php": "^7.3",
     "ext-pdo": "*",
     "pusher/pusher-push-notifications": "^1.0",
-    "ext-json": "*"
+    "ext-json": "*",
+    "firebase/php-jwt": "^5"
   }
 }

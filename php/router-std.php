@@ -11,7 +11,7 @@ $klein->respond('GET', '/', function () {
 $klein->respond('GET', '/api/sensors', function () {
     require_once './src/api/sensors.php';
 });
-$klein->respond('GET', '/api/notify', new \HomeSensors\api\Notify());
+//$klein->respond('GET', '/api/notify', new \HomeSensors\api\Notify());
 
 $klein->respond('GET', '/api/check', new \HomeSensors\api\Check());
 
