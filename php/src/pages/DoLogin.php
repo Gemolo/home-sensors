@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace HomeSensors\api;
+namespace HomeSensors\pages;
 
 use HomeSensors\LoginUtilis;
 use HomeSensors\Page;
-use HomeSensors\PushUtils;
+use HomeSensors\Settings;
 use HomeSensors\TwigUtils;
 use Rakit\Validation\Validation;
 use Rakit\Validation\Validator;
@@ -21,13 +21,13 @@ class DoLogin extends Page {
 
     protected function exec() {
       $token = LoginUtilis::generateToken($_POST["username"], $_POST["password"]);
-      if($token != null){
+      if($token === null){
           TwigUtils::renderPage("error.twig", "Authenticator Error",[
               "errorMessage"=>"Wrong username or password"
           ]);
       } else {
           setcookie("loginToken", $token, 0, "","kevingemolo.ddns.net", true);
-          header("Location: /");
+          header("Location: " . Settings::urlRoot());
       }
     }
 }

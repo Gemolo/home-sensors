@@ -1,0 +1,33 @@
+{% extends 'base-logged-page.twig' %}
+{% block content %}
+    <div id="settings">
+        <ul class="list-group">
+            {% macro row(id, name, root, active) %}
+                {% if id == active %}
+                    {% set cls = "active" %}
+                {% else %}
+                    {% set cls = "" %}
+                {% endif %}
+                <a href="{{ root }}/settings/{{ id }}" class="list-group-item list-group-item-action {{ cls }}">{{ name }}</a>
+            {% endmacro %}
+            {{ _self.row('users', 'User', root, active) }}
+            {{ _self.row('categories', 'Categories', root, active) }}
+            {{ _self.row('sensors', 'Sensors', root, active) }}
+        </ul>
+    </div>
+    <div id="settings_content">
+        {% block settings %}
+        {%  endblock %}
+    </div>
+    <style>
+        .content{
+            display: flex;
+            height: 100%;
+            flex-direction: row;
+        }
+        #settings{
+            width: 200px;
+            background-color: red;
+        }
+    </style>
+{% endblock %}

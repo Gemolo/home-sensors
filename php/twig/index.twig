@@ -1,4 +1,4 @@
-{% extends 'base-page.twig' %}
+{% extends 'base-logged-page.twig' %}
 {% block content %}
     {% macro cell(id, name, root) %}
         <div class="col-sm">
@@ -24,7 +24,7 @@
 
 
     <style>
-        #sensori, .container {
+        #sensori, .content {
             margin-top: 32px;
         }
 

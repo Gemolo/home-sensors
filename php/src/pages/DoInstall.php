@@ -1,8 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace HomeSensors;
+namespace HomeSensors\pages;
 
+use HomeSensors\DatabaseUtils;
+use HomeSensors\Page;
+use HomeSensors\Settings;
 use Rakit\Validation\Validation;
 use Rakit\Validation\Validator;
 
@@ -30,7 +33,7 @@ class DoInstall extends Page {
               `name` VARCHAR(45) NULL,
               `username` VARCHAR(45) NOT NULL,
               `email` VARCHAR(60) NOT NULL,
-              `password` VARCHAR(45) NOT NULL,
+              `password` VARCHAR(255) NOT NULL,
               `isAdmin` BIT(1) NOT NULL,
               PRIMARY KEY (`id`),
               UNIQUE INDEX `username_UNIQUE` (`username`),
