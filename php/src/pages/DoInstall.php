@@ -59,6 +59,29 @@ class DoInstall extends Page {
             )
             ENGINE = InnoDB;
             
+            CREATE TABLE IF NOT EXISTS `HomeSensors`.`Sensor_Light` (
+              `id` INT UNSIGNED NOT NULL,
+              gpio INT UNSIGNED NOT NULL,
+              PRIMARY KEY (`id`),
+              CONSTRAINT `id_light`
+                FOREIGN KEY (`id`)
+                REFERENCES `HomeSensors`.`Sensor` (`id`)
+                ON DELETE CASCADE
+                ON UPDATE RESTRICT
+            )
+            ENGINE = InnoDB;
+            
+            CREATE TABLE IF NOT EXISTS `HomeSensors`.`Sensor_Movement` (
+              `id` INT UNSIGNED NOT NULL,
+              gpio INT UNSIGNED NOT NULL,
+              PRIMARY KEY (`id`),
+              CONSTRAINT `id_movement`
+                FOREIGN KEY (`id`)
+                REFERENCES `HomeSensors`.`Sensor` (`id`)
+                ON DELETE CASCADE
+                ON UPDATE RESTRICT
+            )
+            ENGINE = InnoDB;    
             
             CREATE TABLE IF NOT EXISTS `HomeSensors`.`UsersCategory` (
               `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,

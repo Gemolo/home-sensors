@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 import RPi.GPIO as GPIO
 import time
 
@@ -56,6 +56,26 @@ def index():
     GPIO.cleanup()
     return ret
 
+def getPinValue(pin):
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(pin,  GPIO.IN)
+    ret = GPIO.input(pin)
+    GPIO.cleanup();
+    return ret
+
+
+@app.route('/light')
+@app.route('/gas')
+@app.route('/rain')
+@app.route('/fire')
+def zeroTrue():
+    pin = int(request.args.get("gpio"))
+    return str(getPinValue(pin) == 0)
+
+@app.route('/movement')
+def zeroFalse():
+    pin = int(request.args.get("gpio"))
+    return str(getPinValue(pin) != 0)
 
 
 if __name__ == '__main__':
