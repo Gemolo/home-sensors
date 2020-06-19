@@ -1,0 +1,33 @@
+{% set active = "categories" %}
+{% extends 'base-settings.twig' %}
+{% block settings %}
+
+    <table class="table">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Username</th>
+            <th scope="col">Email</th>
+            <th scope="col">Name</th>
+            <th scope="col">Is admin</th>
+            <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for u in users %}
+            <tr>
+                <th scope="row">{{ u.id }}</th>
+                <td>{{ u.username }}</td>
+                <td>{{ u.email }}</td>
+                <td>{{ u.name }}</td>
+                <td>{% if u.isAdmin %} Yes {% else %} No {% endif %}</td>
+                <td>
+                    <form action="users/{{ u.id }}/edit" method="get">
+                        <button type="submit" class="btn btn-primary">Edit</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

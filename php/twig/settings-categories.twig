@@ -1,0 +1,39 @@
+{% set active = "categories" %}
+{% extends 'base-settings.twig' %}
+{% block settings %}
+
+    <form action="categories/add" method="post">
+        <span class="form-text text-muted">Add category</span>
+        <div class="form-group">
+            <label for="name">name</label>
+            <input type="text" class="form-control" id="name" name="name">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+    <table class="table">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Number of Sensors</th>
+            <th scope="col">Delete</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for c in categories %}
+            <tr>
+                <th scope="row">{{ c.id }}</th>
+                <td>{{ c.name }}</td>
+                <td>{{ c.sensorsCount }}</td>
+                <td>
+                    <form action="categories/delete" method="post">
+                        <input type="hidden" name="id" value="{{ c.id }}">
+                        <button type="submit" class="btn btn-primary">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

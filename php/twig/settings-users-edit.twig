@@ -1,0 +1,10 @@
+{% set active = "" %}
+{% extends 'base-settings.twig' %}
+{% block settings %}
+    <form method="POST" action="edit">
+        {% include 'user-data-form.twig' with {
+            'submit_name': 'Edit user',
+            'user': user
+        } only %}
+    </form>
+{% endblock %}

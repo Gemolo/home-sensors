@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use HomeSensors\DoInstall;
+use HomeSensors\pages\DoInstall;
 
 require_once __DIR__ . '/vendor/autoload.php';
 

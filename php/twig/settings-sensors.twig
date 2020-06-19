@@ -1,5 +1,84 @@
 {% set active = "sensors" %}
 {% extends 'base-settings.twig' %}
 {% block settings %}
-    Impostazioni Sensori
+    <span class="form-text text-muted">Add sensors</span>
+    <select onchange="formVisibility()" id="typeSelect">
+        {% for type in sensorsTypes %}
+            <option value="{{ type.name }}">{{ type.name }}</option>
+        {% endfor %}
+    </select>
+    {% for type in sensorsTypes %}
+        <form class="addForm form-signin" id="form-{{ type.name }}" action="sensors/add" method="post">
+            <input type="hidden" name="type" value="{{ type.name }}">
+            <div class="form-group">
+                <label for="name">name</label>
+                <input type="text" class="form-control" id="name" name="name">
+            </div>
+            {% for name, type in type.inputs %}
+                <div class="form-group">
+                    <label for="name">{{ name }}</label>
+                    <input type="{{ type }}" class="form-control" id="name" name="data[{{ name }}]">
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    {% endfor %}
+    <table class="table">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Categories</th>
+            <th scope="col">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for s in sensors %}
+            <tr>
+                <th scope="row">{{ s.id }}</th>
+                <td>{{ s.name }}</td>
+                <td>{{ s.type }}</td>
+                <td>
+                    {% if s.categories %}
+                        <ul>
+                            {% for c in s.categories %}
+                                <li>{{ c.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <i>No categories</i>
+                    {% endif %}
+                </td>
+                <td>
+                    <form action="sensors/{{ s.id }}/editCategories" method="get">
+                        <button type="submit" class="btn btn-primary">Edit Categories</button>
+                    </form>
+                    <form action="sensors/delete" method="post">
+                        <input type="hidden" name="id" value="{{ s.id }}">
+                        <button type="submit" class="btn btn-primary">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        function formVisibility() {
+            let select = document.getElementById("typeSelect");
+            let type = select.options[select.selectedIndex].value;
+            let forms = document.getElementsByClassName("addForm");
+            for (k in forms) {
+                let form = forms[k];
+                if (form.id === "form-" + type) {
+                    form.style.display = "block";
+                } else {
+                    form.style.display = "none";
+                }
+            }
+        }
+
+        formVisibility();
+    </script>
 {% endblock %}

@@ -4,6 +4,9 @@ declare(strict_types=1);
 namespace HomeSensors\sensors;
 
 
+use HomeSensors\api\Sensors;
+use HomeSensors\DatabaseUtils;
+
 abstract class BaseSensor extends Sensor {
 
     private $gpio;
@@ -23,6 +26,34 @@ abstract class BaseSensor extends Sensor {
         }
         return null;
     }
+
+    protected function twigData(): array {
+        return [
+            "gpio" => $this->gpio,
+        ];
+    }
+
+    public static function create(string $name, array $data) {
+        $class = static::class;
+        $i = strripos($class, '\\');
+        $table = substr($class, $i + 1);
+        $id = Sensor::createBase($name);
+
+        $pdo = DatabaseUtils::connect();
+        $stmt = $pdo->prepare("
+            INSERT INTO $table(id, gpio) VALUES (?, ?)
+        ");
+        $stmt->bindValue(1, $id);
+        $stmt->bindValue(2, $data["gpio"]);
+        $stmt->execute();
+    }
+
+    public static function createInputs(): array {
+        return [
+            "gpio" => "number"
+        ];
+    }
+
 
     public static function fromRow(array $row): Sensor {
         return new static(

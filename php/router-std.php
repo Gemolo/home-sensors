@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+use HomeSensors\LoginUtilis;
+
 require_once __DIR__ . '/vendor/autoload.php';
 
 $klein = new \Klein\Klein();
@@ -15,9 +17,41 @@ $klein->respond('GET', '/', function () {
     require_once './src/index.php';
 });
 
-if(true) {
+if (LoginUtilis::isAdmin()) {
     $klein->respond('GET', '/settings', new \HomeSensors\pages\Settings());
+
+    //Categorie
+    $klein->respond('GET', '/settings/categories', new \HomeSensors\pages\SettingsCategories());
+    $klein->respond('POST', '/settings/categories/add', new \HomeSensors\pages\SettingsCategoriesAdd());
+    $klein->respond('POST', '/settings/categories/delete', new \HomeSensors\pages\SettingsCategoriesDelete());
+    $klein->respond('POST', '/settings/sensors/add', new \HomeSensors\pages\SettingsSensorsAdd());
+    $klein->respond('POST', '/settings/sensors/delete', new \HomeSensors\pages\SettingsSensorsDelete());
+
+    //Sensori
     $klein->respond('GET', '/settings/sensors', new \HomeSensors\pages\SettingsSensors());
+    $klein->respond('GET', '/settings/sensors/[i:id]/editCategories', function ($request) {
+        $id = (int)$request->param("id");
+        $page = new \HomeSensors\pages\SettingsSensorsEditCategories($id);
+        $page();
+    });
+    $klein->respond('POST', '/settings/sensors/[i:id]/editCategories', function ($request) {
+        $id = (int)$request->param("id");
+        $page = new \HomeSensors\pages\SettingsSensorsEditCategoriesPost($id);
+        $page();
+    });
+
+    //Utenti
+    $klein->respond('GET', '/settings/users', new \HomeSensors\pages\SettingsUsers());
+    $klein->respond('GET', '/settings/users/[i:id]/edit', function ($request) {
+        $id = (int)$request->param("id");
+        $page = new \HomeSensors\pages\SettingsUsersEdit($id);
+        $page();
+    });
+    $klein->respond('POST', '/settings/users/[i:id]/edit', function ($request) {
+        $id = (int)$request->param("id");
+        $page = new \HomeSensors\pages\SettingsUsersEditPost($id);
+        $page();
+    });
 }
 
 $klein->dispatch();

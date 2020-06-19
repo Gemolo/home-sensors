@@ -9,10 +9,17 @@ $klein = new \Klein\Klein();
 
 $klein->respond('GET', '/login', new \HomeSensors\pages\Login());
 $klein->respond('POST', '/login', new \HomeSensors\pages\DoLogin());
-$klein->respond('GET', '/', function(){
+$klein->respond('GET', '/', function () {
     header("Location:" . Settings::urlRoot() . "/login");
     exit();
 });
 
+$klein->onHttpError(function ($code, $router) {
+    switch ($code) {
+        case 404:
+            header('Location: ' . Settings::urlRoot() . '/login');
+            exit();
+    }
+});
 
 $klein->dispatch();

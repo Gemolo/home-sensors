@@ -34,6 +34,7 @@ class DoInstall extends Page {
               `username` VARCHAR(45) NOT NULL,
               `email` VARCHAR(60) NOT NULL,
               `password` VARCHAR(255) NOT NULL,
+              `passwordIteration` INT UNSIGNED NOT NULL DEFAULT 0,
               `isAdmin` BIT(1) NOT NULL,
               PRIMARY KEY (`id`),
               UNIQUE INDEX `username_UNIQUE` (`username`),
@@ -90,12 +91,12 @@ class DoInstall extends Page {
               PRIMARY KEY (`id`),
               INDEX `user_idx` (`user`),
               INDEX `category_idx` (`category`),
-              CONSTRAINT `user`
+              CONSTRAINT `userCategory_user`
                 FOREIGN KEY (`user`)
                 REFERENCES `HomeSensors`.`User` (`id`)
                 ON DELETE CASCADE
                 ON UPDATE RESTRICT,
-              CONSTRAINT `category`
+              CONSTRAINT `userCategory_category`
                 FOREIGN KEY (`category`)
                 REFERENCES `HomeSensors`.`Category` (`id`)
                 ON DELETE CASCADE
@@ -111,12 +112,12 @@ class DoInstall extends Page {
               PRIMARY KEY (`id`),
               INDEX `category_idx` (`category`),
               INDEX `sensor_idx` (`sensor`),
-              CONSTRAINT `category`
+              CONSTRAINT `sensorCategory_category`
                 FOREIGN KEY (`category`)
                 REFERENCES `HomeSensors`.`Category` (`id`)
                 ON DELETE CASCADE
                 ON UPDATE RESTRICT,
-              CONSTRAINT `sensor`
+              CONSTRAINT `sensorCategory_sensor`
                 FOREIGN KEY (`sensor`)
                 REFERENCES `HomeSensors`.`Sensor` (`id`)
                 ON DELETE CASCADE
