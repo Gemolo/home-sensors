@@ -1,0 +1,12 @@
+{% set active = "" %}
+{% extends 'base-settings.twig' %}
+{% block settings %}
+    <form action="?" method="post">
+        {% for u in users %}
+            <input id="u-{{ u.id }}" type="checkbox" name="enabled[{{ u.id }}]" {% if u.belongs %} checked {% endif %}>
+            <input type="hidden" name="users[]" value="{{ u.id }}">
+            <label for="u-{{ u.id }}">{{ u.username }}</label><br>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Change</button>
+    </form>
+{% endblock %}

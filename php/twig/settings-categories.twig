@@ -17,6 +17,7 @@
             <th scope="col">#</th>
             <th scope="col">Name</th>
             <th scope="col">Number of Sensors</th>
+            <th scope="col">Users</th>
             <th scope="col">Delete</th>
         </tr>
         </thead>
@@ -27,6 +28,20 @@
                 <td>{{ c.name }}</td>
                 <td>{{ c.sensorsCount }}</td>
                 <td>
+                    {% if c.users %}
+                        <ul>
+                            {% for u in c.users %}
+                                <li>{{ u.username }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <i>No users</i>
+                    {% endif %}
+                </td>
+                <td>
+                    <form action="categories/{{ c.id }}/editUsers" method="get">
+                        <button type="submit" class="btn btn-primary">Edit Users</button>
+                    </form>
                     <form action="categories/delete" method="post">
                         <input type="hidden" name="id" value="{{ c.id }}">
                         <button type="submit" class="btn btn-primary">Delete</button>

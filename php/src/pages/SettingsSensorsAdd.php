@@ -30,6 +30,7 @@ class SettingsSensorsAdd extends Page {
 
         $sensorClass = Sensor::getClassForTypeName($type);
 
+        $sensorClass::createTable();
         $sensorClass::create($name, $data);
 
         header("Location: " . \HomeSensors\Settings::urlRoot() . '/settings/sensors');

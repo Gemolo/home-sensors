@@ -18,12 +18,10 @@ class Sensors extends Page {
     protected function exec() {
         $sensors = Sensor::sensors();
         $ret = [];
-        foreach ($sensors as $sensor){
-            $ret[$sensor->getId()] = [
-                'name'=>$sensor->getName(),
-                'data'=>$sensor->getSensorData()
-            ];
+        foreach ($sensors as $sensor) {
+            $ret[$sensor->getId()] = $sensor->getSensorData();
         }
+        header('Content-Type: application/json');
         echo json_encode((object)$ret);
     }
 }

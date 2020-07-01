@@ -5,23 +5,30 @@ import time
 
 app = Flask(__name__)
 
+@app.route('/distance')
 def distance():
+    transmitter = int(request.args.get("transmitter"))
+    receiver = int(request.args.get("receiver"))
+
+    GPIO.setup(transmitter,  GPIO.OUT)
+    GPIO.setup(receiver,  GPIO.IN)
+
     # set Trigger to HIGH
-    GPIO.output(23, True)
+    GPIO.output(transmitter, True)
  
     # set Trigger after 0.01ms to LOW
     time.sleep(0.00001)
-    GPIO.output(23, False)
+    GPIO.output(transmitter, False)
  
     StartTime = time.time()
     StopTime = time.time()
  
     # save StartTime
-    while GPIO.input(24) == 0:
+    while GPIO.input(receiver) == 0:
         StartTime = time.time()
  
     # save time of arrival
-    while GPIO.input(24) == 1:
+    while GPIO.input(receiver) == 1:
         StopTime = time.time()
  
     # time difference between start and arrival
@@ -32,29 +39,6 @@ def distance():
  
     return distance
 
-@app.route('/')
-def index():
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(13,  GPIO.IN)
-    GPIO.setup(16,  GPIO.IN)
-    GPIO.setup(19,  GPIO.IN)
-    GPIO.setup(20,  GPIO.IN)
-    GPIO.setup(21,  GPIO.IN)
-    GPIO.setup(23,  GPIO.OUT)
-    GPIO.setup(24,  GPIO.IN)
-    GPIO.setup(26,  GPIO.IN)
-
-    ret = {
-        'luce': GPIO.input(13) == 0,
-        'gas': GPIO.input(16) == 0,
-        'pir0': GPIO.input(19) == 1,
-        'pioggia': GPIO.input(20) == 0,
-        'fuoco': GPIO.input(21) == 0,
-        'tracking': GPIO.input(26) == 0,
-        'metro': distance()
-    }
-    GPIO.cleanup()
-    return ret
 
 def getPinValue(pin):
     GPIO.setmode(GPIO.BCM)
@@ -62,7 +46,6 @@ def getPinValue(pin):
     ret = GPIO.input(pin)
     GPIO.cleanup();
     return ret
-
 
 @app.route('/light')
 @app.route('/gas')

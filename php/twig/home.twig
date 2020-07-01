@@ -1,26 +1,30 @@
 {% extends 'base-logged-page.twig' %}
 {% block content %}
-    {% macro cell(id, name, root) %}
+    {% macro cell(s, root) %}
         <div class="col-sm">
             <div class="card">
-                <img src="{{ root }}/static/img/{{ id }}.png" height="128px" class="card-img-top" alt="...">
+                <img src="{{ root }}/static/img/{{ s.type }}.png" height="128px" class="card-img-top" alt="{{ s.name }}">
                 <div class="card-body">
-                    <h5 class="card-title">{{ name }}</h5>
-                    <p class="card-text sens" id="sens-{{ id }}">N/A</p>
+                    <h5 class="card-title">{{ s.name }}</h5>
+                    <p class="card-text sens" id="sens-{{ s.id }}">N/A</p>
                 </div>
             </div>
         </div>
     {% endmacro %}
 
+    {% macro category(c, root) %}
+        <h2>{{ c.name }}</h2>
+        <div id="sensori" class="row">
+            {% for s in c.sensors %}
+                {{ _self.cell(s, root) }}
+            {% endfor %}
+        </div>
+    {% endmacro %}
+
     <h1>Sensori</h1>
-    <div id="sensori" class="row">
-        {{ _self.cell('fuoco', 'Fuoco', root) }}
-        {{ _self.cell('gas', 'Gas', root) }}
-        {{ _self.cell('luce', 'Luce', root) }}
-        {{ _self.cell('pioggia', 'Pioggia', root) }}
-        {{ _self.cell('pir0', 'Movimento', root) }}
-        {{ _self.cell('metro', 'Metro', root) }}
-    </div>
+    {% for c in categories %}
+        {{ _self.category(c, root) }}
+    {% endfor %}
 
 
     <style>
@@ -46,9 +50,7 @@
                     for (k in result) {
                         p = $('#sens-' + k);
                         valore = result[k];
-                        if (k === "metro") {
-                            valore = valore.toFixed(1) + " cm";
-                        }
+
                         p.text(valore);
                         p.css('color', 'red');
                         p.delay(100).queue(function (next) {
@@ -61,8 +63,8 @@
         }
 
         sensori();
-        setInterval(function () {
+        /*setInterval(function () {
             sensori();
-        }, 500);
+        }, 500);*/
     </script>
 {% endblock %}

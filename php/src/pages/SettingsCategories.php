@@ -30,6 +30,17 @@ class SettingsCategories extends Page {
         $stmt->execute();
         $arr = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+        foreach ($arr as &$cat) {
+            $stmt = $pdo->prepare("
+                SELECT u.*
+                FROM User u
+                INNER JOIN UsersCategory uc ON uc.user = u.id
+                WHERE uc.category = ?
+            ");
+            $stmt->bindValue(1, $cat['id']);
+            $stmt->execute();
+            $cat['users'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
         TwigUtils::renderPage("settings-categories.twig", "Categories Settings", [
             "categories" => $arr,
         ]);

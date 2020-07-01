@@ -22,7 +22,6 @@ abstract class BaseSensor extends Sensor {
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             $response = curl_exec($curl);
             return $response;
-
         }
         return null;
     }
@@ -33,25 +32,21 @@ abstract class BaseSensor extends Sensor {
         ];
     }
 
-    public static function create(string $name, array $data) {
-        $class = static::class;
-        $i = strripos($class, '\\');
-        $table = substr($class, $i + 1);
-        $id = Sensor::createBase($name);
-
-        $pdo = DatabaseUtils::connect();
-        $stmt = $pdo->prepare("
-            INSERT INTO $table(id, gpio) VALUES (?, ?)
-        ");
-        $stmt->bindValue(1, $id);
-        $stmt->bindValue(2, $data["gpio"]);
-        $stmt->execute();
-    }
-
     public static function createInputs(): array {
         return [
             "gpio" => "number"
         ];
+    }
+
+    protected static function rowData(array $data): array {
+        $gpio = (int)$data['gpio'];
+        if($gpio > 0) {
+            return [
+                'gpio' => $gpio
+            ];
+        } else {
+            throw new \LogicException('GPIO <= 0');
+        }
     }
 
 
@@ -63,5 +58,15 @@ abstract class BaseSensor extends Sensor {
         );
     }
 
-    protected static abstract function url() : string;
+    protected static function url() : string {
+        return static::type();
+    }
+
+    protected static function tableColumns(): array {
+        return [
+            'gpio INT UNSIGNED NOT NULL'
+        ];
+    }
+
+
 }

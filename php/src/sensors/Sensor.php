@@ -11,6 +11,7 @@ abstract class Sensor {
 
     private $id;
     private $name;
+    private $categories;
 
     protected function __construct(int $id, string $name) {
         $this->id = $id;
@@ -25,45 +26,59 @@ abstract class Sensor {
         return $this->name;
     }
 
-    public function getTwigData() : array {
+    public function getCategories() {
+        if ($this->categories === null) {
+            $pdo = DatabaseUtils::connect();
+            $stmt = $pdo->prepare("
+                SELECT c.id, c.name
+                FROM SensorCategory sc
+                INNER JOIN Category c ON c.id = sc.category
+                WHERE sc.sensor = ?
+            ");
+            $stmt->bindValue(1, $this->id);
+            $stmt->execute();
+            $this->categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return $this->categories;
+    }
 
-        $pdo = DatabaseUtils::connect();
-        $stmt = $pdo->prepare("
-            SELECT c.id, c.name
-            FROM SensorCategory sc
-            INNER JOIN Category c ON c.id = sc.category
-            WHERE sc.sensor = ?
-        ");
-        $stmt->bindValue(1, $this->id);
-        $stmt->execute();
-
-
+    public function getTwigData(bool $withCategories = true): array {
         return array_merge($this->twigData(), [
-            "name" => $this->name,
-            "id" => $this->id,
-            "type" => static::name(),
-            "categories" => $stmt->fetchAll(PDO::FETCH_ASSOC),
+            "name"       => $this->name,
+            "id"         => $this->id,
+            "type"       => static::type(),
+            "type_name"  => static::name(),
+            "categories" => $withCategories ? $this->getCategories() : null,
         ]);
     }
 
     public abstract function getSensorData(): ?string;
 
-    protected abstract function twigData(): array ;
+    protected abstract function twigData(): array;
 
     public abstract static function fromRow(array $row): Sensor;
 
-    public abstract static function create(string $name, array $data);
+    protected abstract static function rowData(array $data): array;
 
-    public abstract static function createInputs() : array;
+    public abstract static function createInputs(): array;
 
-    public abstract static function name() : string;
+    public abstract static function name(): string;
+
+    protected static abstract function type(): string;
+
+    protected static abstract function tableColumns(): array;
 
     public const CLASSES = [
+        Sensor_Distance::class,
+        Sensor_Fire::class,
+        Sensor_Gas::class,
         Sensor_Light::class,
         Sensor_Movement::class,
+        Sensor_Rain::class,
     ];
 
-    protected static function createBase(string $name) : int{
+    //region STRUCTURAL
+    protected static function createBase(string $name): int {
         $pdo = DatabaseUtils::connect();
         $stmt = $pdo->prepare("
             INSERT INTO Sensor(name) VALUES (?)
@@ -73,37 +88,102 @@ abstract class Sensor {
         return (int)$pdo->lastInsertId();
     }
 
-    protected static function loadSensors(): array {
-        $class = static::class;
-        $i = strripos($class, '\\');
-        $table = substr($class, $i + 1);
-        $stmt = DatabaseUtils::connect()->prepare("
-            SELECT *
-            from Sensor s
-            inner join $table s2 on s.id = s2.id 
+    public static function createTable(): void {
+        $pdo = DatabaseUtils::connect();
+        $table = static::tableName();
+        $type = static::type();
+        $columns = implode(',', static::tableColumns());
+        $stmt = $pdo->prepare($q="
+           CREATE TABLE IF NOT EXISTS `HomeSensors`.`$table` (
+              `id` INT UNSIGNED NOT NULL,
+              PRIMARY KEY (`id`),
+              CONSTRAINT `id_$type`
+                FOREIGN KEY (`id`)
+                REFERENCES `HomeSensors`.`Sensor` (`id`)
+                ON DELETE CASCADE
+                ON UPDATE RESTRICT,              
+              $columns
+            )
+            ENGINE = InnoDB
         ");
-        $ret = [];
+
         $stmt->execute();
-        foreach ($stmt->fetchAll() as $row) {
-            $ret[] = static::fromRow($row);
-        }
-        return $ret;
     }
 
-    public static function types() : array {
+    protected static function tableName(): string {
+        $class = static::class;
+        $i = strripos($class, '\\');
+        return substr($class, $i + 1);
+    }
+
+    protected static function tableExists(): bool {
+        $pdo = DatabaseUtils::connect();
+        $stmt = $pdo->prepare("
+            SELECT * 
+            FROM information_schema.tables
+            WHERE table_schema = 'HomeSensors' AND table_name = ?;
+        ");
+        $stmt->bindValue(1, static::tableName());
+        $stmt->execute();
+        return $stmt->fetch() !== false;
+    }
+
+    //endregion
+
+    public static function create(string $name, array $data) {
+        $rowData = static::rowData($data);
+        $columns = implode(',', array_keys($rowData));
+
+        $id = Sensor::createBase($name);
+
+        $pdo = DatabaseUtils::connect();
+        $table = static::tableName();
+        $stmt = $pdo->prepare("INSERT INTO $table(id,$columns) VALUES (?" . str_repeat(',?', \count($rowData)) . ")");
+
+        $stmt->bindValue(1, $id);
+        $i = 2;
+        foreach ($rowData as $d) {
+            $stmt->bindValue($i++, $d);
+        }
+        $stmt->execute();
+    }
+
+    protected static function loadSensors(): array {
+        $pdo = DatabaseUtils::connect();
+
+        if (static::tableExists()) {
+            $table = static::tableName();
+            $stmt = $pdo->prepare("
+                SELECT *
+                FROM Sensor s
+                INNER JOIN $table s2 ON s.id = s2.id 
+            ");
+            $ret = [];
+            $stmt->execute();
+            foreach ($stmt->fetchAll() as $row) {
+                $ret[$row['id']] = static::fromRow($row);
+            }
+
+            return $ret;
+        } else {
+            return [];
+        }
+    }
+
+    public static function types(): array {
         $ret = [];
-        foreach (self::CLASSES as $class){
+        foreach (self::CLASSES as $class) {
             $ret[] = [
                 "inputs" => $class::createInputs(),
-                "name" => $class::name(),
+                "name"   => $class::name(),
             ];
         }
         return $ret;
     }
 
-    public static function getClassForTypeName(string $name) : ?string {
-        foreach (self::CLASSES as $class){
-            if($class::name() === $name){
+    public static function getClassForTypeName(string $name): ?string {
+        foreach (self::CLASSES as $class) {
+            if ($class::name() === $name) {
                 return $class;
             }
         }
@@ -117,8 +197,8 @@ abstract class Sensor {
         $ret = [];
         foreach (self::CLASSES as $class) {
             $sensors = $class::loadSensors();
-            if ($sensors !== []){
-                array_push($ret, ...$sensors);
+            if ($sensors !== []) {
+                $ret = $ret + $sensors;
             }
         }
         return $ret;

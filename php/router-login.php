@@ -14,6 +14,9 @@ $klein->respond('GET', '/', function () {
     exit();
 });
 
+$klein->respond('GET', '/register', new \HomeSensors\pages\Register());
+$klein->respond('POST', '/register', new \HomeSensors\pages\RegisterPost());
+
 $klein->onHttpError(function ($code, $router) {
     switch ($code) {
         case 404:

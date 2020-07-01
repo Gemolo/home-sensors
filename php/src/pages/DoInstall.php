@@ -5,11 +5,22 @@ namespace HomeSensors\pages;
 
 use HomeSensors\DatabaseUtils;
 use HomeSensors\Page;
+use HomeSensors\RegisterUtils;
 use HomeSensors\Settings;
 use Rakit\Validation\Validation;
 use Rakit\Validation\Validator;
 
 class DoInstall extends Page {
+
+    /*
+        'luce': 13
+        'gas': 16
+        'pir0': 19
+        'pioggia': 20
+        'fuoco': 21
+        'tracking': 26
+        'metro': 23 transmitter, 24 receiver
+     */
 
     protected function validation(Validator $validator): Validation {
         return $validator->make($_POST, [
@@ -91,6 +102,7 @@ class DoInstall extends Page {
               PRIMARY KEY (`id`),
               INDEX `user_idx` (`user`),
               INDEX `category_idx` (`category`),
+              UNIQUE INDEX (`user`, `category`),
               CONSTRAINT `userCategory_user`
                 FOREIGN KEY (`user`)
                 REFERENCES `HomeSensors`.`User` (`id`)
@@ -112,6 +124,7 @@ class DoInstall extends Page {
               PRIMARY KEY (`id`),
               INDEX `category_idx` (`category`),
               INDEX `sensor_idx` (`sensor`),
+              UNIQUE INDEX (`category`, `sensor`),
               CONSTRAINT `sensorCategory_category`
                 FOREIGN KEY (`category`)
                 REFERENCES `HomeSensors`.`Category` (`id`)
@@ -125,16 +138,8 @@ class DoInstall extends Page {
             )
             ENGINE = InnoDB;
         ');
-        $stmt = $pdo->prepare('INSERT INTO User(name, username, email, password, isAdmin) VALUES (?,?,?,?,1)');
-        $name = $_POST['name'];
-        if(trim($name) === '') {
-            $name = null;
-        }
-        $stmt->bindValue(1, $name);
-        $stmt->bindValue(2, $_POST['username']);
-        $stmt->bindValue(3, $_POST['email']);
-        $stmt->bindValue(4, password_hash($_POST['password'], PASSWORD_DEFAULT));
-        $stmt->execute();
+
+        RegisterUtils::registerUser($_POST['username'], $_POST['email'], $_POST['password'], $_POST['name'] ?? null, true);
 
         header("Location: " . Settings::urlRoot() . '/login');
     }

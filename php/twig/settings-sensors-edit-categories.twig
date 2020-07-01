@@ -1,7 +1,7 @@
 {% set active = "" %}
 {% extends 'base-settings.twig' %}
 {% block settings %}
-    <form action="editCategories" method="post">
+    <form action="?" method="post">
         {% for c in categories %}
             <input id="c-{{ c.id }}" type="checkbox"
                    name="enabled[{{ c.id }}]" {% if c.belongs %} checked {% endif %}>

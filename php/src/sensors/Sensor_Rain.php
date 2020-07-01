@@ -4,13 +4,13 @@ declare(strict_types=1);
 namespace HomeSensors\sensors;
 
 
-final class Sensor_Light extends BaseSensor {
+final class Sensor_Rain extends BaseSensor {
 
     public static function name(): string {
-        return "Light Sensor";
+        return "Rain Sensor";
     }
-
+    
     protected static function type(): string {
-        return 'light';
+        return 'rain';
     }
 }

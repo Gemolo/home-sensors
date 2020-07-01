@@ -29,6 +29,7 @@ class SettingsUsersEditPost extends Page {
         $email = $_POST["email"] ?? "";
         $password = $_POST["password"] ?? null;
         $confirmPassword = $_POST["confirm_password"] ?? null;
+        $isAdmin = ($_POST["is_admin"] ?? null) === "on";
 
 
         $stmt = $pdo->prepare("UPDATE User SET name=?, email=? WHERE id=?");
@@ -37,13 +38,19 @@ class SettingsUsersEditPost extends Page {
         $stmt->bindValue(3, $this->id);
         $stmt->execute();
 
-        if($password !== null && $password === $confirmPassword) {
+        if ($password !== null && strlen($password) > 6 && $password === $confirmPassword) {
             $stmt = $pdo->prepare("UPDATE User SET password=?, passwordIteration=passwordIteration+1 WHERE id=?");
             $stmt->bindValue(1, password_hash($password, PASSWORD_DEFAULT));
             $stmt->bindValue(2, $this->id);
             $stmt->execute();
         }
 
+        if($this->id !== 1) {
+            $stmt = $pdo->prepare("UPDATE User SET isAdmin=? WHERE id=?");
+            $stmt->bindValue(1, $isAdmin ? 1 : 0);
+            $stmt->bindValue(2, $this->id);
+            $stmt->execute();
+        }
 
         header("Location: " . \HomeSensors\Settings::urlRoot() . '/settings/users');
 

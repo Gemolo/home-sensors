@@ -5,6 +5,7 @@ use HomeSensors\LoginUtilis;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
+
 $klein = new \Klein\Klein();
 
 
@@ -12,23 +13,34 @@ $klein->respond('GET', '/api/sensors', new \HomeSensors\api\Sensors());
 //$klein->respond('GET', '/api/notify', new \HomeSensors\api\Notify());
 $klein->respond('GET', '/api/check', new \HomeSensors\api\Check());
 
-
-$klein->respond('GET', '/', function () {
-    require_once './src/index.php';
-});
+$klein->respond('GET', '/register', new \HomeSensors\pages\Register());
+$klein->respond('POST', '/register', new \HomeSensors\pages\RegisterPost());
+$klein->respond('GET', '/',new \HomeSensors\pages\Home());
 
 if (LoginUtilis::isAdmin()) {
+    $klein->respond('POST', '/api/generate_register_token', new \HomeSensors\api\GenerateRegisterToken());
+
     $klein->respond('GET', '/settings', new \HomeSensors\pages\Settings());
 
     //Categorie
     $klein->respond('GET', '/settings/categories', new \HomeSensors\pages\SettingsCategories());
     $klein->respond('POST', '/settings/categories/add', new \HomeSensors\pages\SettingsCategoriesAdd());
     $klein->respond('POST', '/settings/categories/delete', new \HomeSensors\pages\SettingsCategoriesDelete());
-    $klein->respond('POST', '/settings/sensors/add', new \HomeSensors\pages\SettingsSensorsAdd());
-    $klein->respond('POST', '/settings/sensors/delete', new \HomeSensors\pages\SettingsSensorsDelete());
+    $klein->respond('GET', '/settings/categories/[i:id]/editUsers', function ($request) {
+        $id = (int)$request->param("id");
+        $page = new \HomeSensors\pages\SettingsCategoriesEditUsers($id);
+        $page();
+    });
+    $klein->respond('POST', '/settings/categories/[i:id]/editUsers', function ($request) {
+        $id = (int)$request->param("id");
+        $page = new \HomeSensors\pages\SettingsCategoriesEditUsersPost($id);
+        $page();
+    });
 
     //Sensori
     $klein->respond('GET', '/settings/sensors', new \HomeSensors\pages\SettingsSensors());
+    $klein->respond('POST', '/settings/sensors/add', new \HomeSensors\pages\SettingsSensorsAdd());
+    $klein->respond('POST', '/settings/sensors/delete', new \HomeSensors\pages\SettingsSensorsDelete());
     $klein->respond('GET', '/settings/sensors/[i:id]/editCategories', function ($request) {
         $id = (int)$request->param("id");
         $page = new \HomeSensors\pages\SettingsSensorsEditCategories($id);
