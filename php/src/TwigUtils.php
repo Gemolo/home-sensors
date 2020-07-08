@@ -13,8 +13,9 @@ final class TwigUtils {
         $loader = new FilesystemLoader(__DIR__ . '/../twig');
         $twig = new Environment($loader);
         echo $twig->render($page, array_merge($data, [
-            'title' => $title,
-            'root'  => Settings::urlRoot(),
+            'title'  => $title,
+            'root'   => Settings::urlRoot(),
+            'domain' => Settings::domain(),
         ]));
     }
 }

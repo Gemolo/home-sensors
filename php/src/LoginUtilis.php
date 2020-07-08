@@ -69,7 +69,18 @@ class LoginUtilis {
         } catch (\Exception $e) {
             return null;
         }
+    }
 
+    public static function logout(bool $logoutAllDevices): void {
+        if ($logoutAllDevices) {
+            $pdo = DatabaseUtils::connect();
+            $user = LoginUtilis::login();
+
+            $stmt = $pdo->prepare("UPDATE User SET passwordIteration=passwordIteration+1 WHERE id=?");
+            $stmt->bindValue(1, $user['id']);
+            $stmt->execute();
+        }
+        setcookie("loginToken", '', 0, "", Settings::domain(), true);
     }
 
 }

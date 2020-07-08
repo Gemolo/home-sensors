@@ -1,11 +1,8 @@
 <div class="form-group">
-    <label for="name">Name</label>
-    <input type="text" class="form-control" id="name" name="name" value="{{ user.name }}">
-</div>
-<div class="form-group">
     <label for="username">Username</label>
     <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" {% if user.username %} disabled {% endif %}>
 </div>
+
 <div class="form-group">
     <label for="email">Email address</label>
     <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}">
@@ -18,8 +15,12 @@
     <label for="confirm_password">Confirm password</label>
     <input type="password" class="form-control" id="confirm_password" name="confirm_password">
 </div>
+<div class="form-group">
+    <label for="name">Complete Name</label>
+    <input type="text" class="form-control" id="name" name="name" value="{{ user.name }}">
+</div>
 {% if user.username %}
-    <div class="form-check">
+    <div class="form-check" style="margin-bottom: 8px">
         <input type="checkbox" class="form-check-input" name="is_admin" id="isAdmin"  {% if user.isAdmin  %} checked {% endif %} {% if user.id == 1 %} disabled {% endif %}>
         <label class="form-check-label" for="isAdmin">Is admin?</label>
     </div>

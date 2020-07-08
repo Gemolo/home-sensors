@@ -1,7 +1,7 @@
 {% extends 'base-page.twig' %}
 {% block content %}
-    <h1>Register</h1>
-    <form method="POST" action="{{ root }}/register">
+    <form class="form-signin" method="POST" action="{{ root }}/register">
+        <h1>Register</h1>
         {% include 'user-data-form.twig' with {
             'submit_name': 'Create user'
         } only %}

@@ -15,25 +15,25 @@ $klein->respond('GET', '/api/check', new \HomeSensors\api\Check());
 
 $klein->respond('GET', '/register', new \HomeSensors\pages\Register());
 $klein->respond('POST', '/register', new \HomeSensors\pages\RegisterPost());
-$klein->respond('GET', '/',new \HomeSensors\pages\Home());
+$klein->respond('GET', '/', new \HomeSensors\pages\Home());
+$klein->respond('GET', '/logout', new \HomeSensors\pages\Logout());
+$klein->respond('POST', '/logout', new \HomeSensors\pages\LogoutPost());
 
 if (LoginUtilis::isAdmin()) {
     $klein->respond('POST', '/api/generate_register_token', new \HomeSensors\api\GenerateRegisterToken());
-
-    $klein->respond('GET', '/settings', new \HomeSensors\pages\Settings());
 
     //Categorie
     $klein->respond('GET', '/settings/categories', new \HomeSensors\pages\SettingsCategories());
     $klein->respond('POST', '/settings/categories/add', new \HomeSensors\pages\SettingsCategoriesAdd());
     $klein->respond('POST', '/settings/categories/delete', new \HomeSensors\pages\SettingsCategoriesDelete());
-    $klein->respond('GET', '/settings/categories/[i:id]/editUsers', function ($request) {
+    $klein->respond('GET', '/settings/categories/[i:id]/edit', function ($request) {
         $id = (int)$request->param("id");
-        $page = new \HomeSensors\pages\SettingsCategoriesEditUsers($id);
+        $page = new \HomeSensors\pages\SettingsCategoriesEdit($id);
         $page();
     });
-    $klein->respond('POST', '/settings/categories/[i:id]/editUsers', function ($request) {
+    $klein->respond('POST', '/settings/categories/[i:id]/edit', function ($request) {
         $id = (int)$request->param("id");
-        $page = new \HomeSensors\pages\SettingsCategoriesEditUsersPost($id);
+        $page = new \HomeSensors\pages\SettingsCategoriesEditPost($id);
         $page();
     });
 
@@ -41,14 +41,14 @@ if (LoginUtilis::isAdmin()) {
     $klein->respond('GET', '/settings/sensors', new \HomeSensors\pages\SettingsSensors());
     $klein->respond('POST', '/settings/sensors/add', new \HomeSensors\pages\SettingsSensorsAdd());
     $klein->respond('POST', '/settings/sensors/delete', new \HomeSensors\pages\SettingsSensorsDelete());
-    $klein->respond('GET', '/settings/sensors/[i:id]/editCategories', function ($request) {
+    $klein->respond('GET', '/settings/sensors/[i:id]/edit', function ($request) {
         $id = (int)$request->param("id");
-        $page = new \HomeSensors\pages\SettingsSensorsEditCategories($id);
+        $page = new \HomeSensors\pages\SettingsSensorsEdit($id);
         $page();
     });
-    $klein->respond('POST', '/settings/sensors/[i:id]/editCategories', function ($request) {
+    $klein->respond('POST', '/settings/sensors/[i:id]/edit', function ($request) {
         $id = (int)$request->param("id");
-        $page = new \HomeSensors\pages\SettingsSensorsEditCategoriesPost($id);
+        $page = new \HomeSensors\pages\SettingsSensorsEditPost($id);
         $page();
     });
 

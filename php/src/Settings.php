@@ -6,6 +6,10 @@ namespace HomeSensors;
 
 class Settings {
 
+    public static function domain() : string {
+        return 'kevingemolo.ddns.net';
+    }
+
     public static function urlRoot() : string {
         return '/sensori';
     }

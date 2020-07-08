@@ -1,13 +1,8 @@
 {% set active = "users" %}
 {% extends 'base-settings.twig' %}
 {% block settings %}
-    {# TODO #}
-    {# 1. cancellazione utente #}
-    {# 2. edit profilo personale #}
-    {# 3. aggiunta utente da admin #}
     <h1>Add a user</h1>
-    <a href="users/add" class="btn btn-primary">Add user now</a>
-    <h2>Generate user token</h2>
+    <p>Generate a link that will be valid to create a user for the specified amount of time</p>
 
     <select id="tokenHours" class="custom-select custom-select-sm">
         <option value="1">1 hour</option>
@@ -17,14 +12,21 @@
         <option value="72">3 days</option>
         <option value="168">7 days</option>
     </select>
-    <div class="form-check">
+    <div class="form-check" id="tokenAdminDiv">
         <input type="checkbox" class="form-check-input" id="tokenAdmin">
         <label class="form-check-label" for="tokenAdmin">Will be admin</label>
     </div>
     <button class="btn btn-primary" onclick="generateToken()">Generate add user token</button>
-    <input id="tokenText" style="display: none" type="text" disabled class="form-control">
+    <div id="tokenTextDiv" style="display: none">
+        Token:<br>
+        <input id="tokenText" type="text" disabled class="form-control">
+        <div style="display: flex; flex-direction: row; margin-top: 8px">
+            <a id="copyButton" class="btn btn-primary" style="margin-right: 4px" href="#">Copy link</a>
+            <a id="goToButton" class="btn btn-primary" style="margin-left: 4px" href="#">Go to link</a>
+        </div>
+    </div>
 
-    <h1>Users</h1>
+    <h1 style="margin-top: 16px">Users</h1>
     <table class="table">
         <thead class="thead-dark">
         <tr>
@@ -54,6 +56,19 @@
         </tbody>
     </table>
 
+    <style>
+        #tokenAdminDiv {
+            margin-top: 8px;
+            margin-bottom: 8px;
+        }
+        #tokenTextDiv {
+            margin-top: 16px;
+        }
+        #tokenTextDiv > div > a {
+            width: 50%;
+        }
+    </style>
+
     <script>
         function generateToken() {
             let hours = $('#tokenHours').val();
@@ -67,7 +82,16 @@
                     'will_be_admin': admin
                 },
                 success: function (r) {
-                    $('#tokenText').css('display', 'block').val('{{ root }}/register?token=' + encodeURIComponent(JSON.parse(r)));
+                    let link = 'https://{{ domain }}{{ root }}/register?token=' + encodeURIComponent(JSON.parse(r));
+                    $('#tokenTextDiv').css('display', 'block');
+                    $('#tokenText').val(link);
+                    $('#copyButton').on('click', () => {
+                        navigator.clipboard.writeText(link).then(function() {
+                        }, function() {
+                            alert("Error copying to clipboard!")
+                        });
+                    });
+                    $('#goToButton').attr('href', link);
                 }
             });
         }

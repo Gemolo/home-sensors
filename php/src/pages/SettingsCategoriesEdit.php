@@ -11,7 +11,7 @@ use PDO;
 use Rakit\Validation\Validation;
 use Rakit\Validation\Validator;
 
-class SettingsCategoriesEditUsers extends Page {
+class SettingsCategoriesEdit extends Page {
 
     private $id;
 
@@ -33,8 +33,20 @@ class SettingsCategoriesEditUsers extends Page {
         ");
         $stmt->bindValue(1, $this->id);
         $stmt->execute();
-        TwigUtils::renderPage("settings-categories-edit-users.twig", "Edit Users", [
-            "users" => $stmt->fetchAll(PDO::FETCH_ASSOC),
+        $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $stmt = $pdo->prepare("
+            SELECT name
+            FROM Category
+            WHERE id = ?
+        ");
+        $stmt->bindValue(1, $this->id);
+        $stmt->execute();
+        $name = $stmt->fetch(PDO::FETCH_ASSOC)['name'];
+
+        TwigUtils::renderPage("settings-categories-edit.twig", "Edit Users", [
+            "name"  => $name,
+            "users" => $users,
         ]);
     }
 }

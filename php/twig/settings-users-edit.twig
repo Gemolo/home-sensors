@@ -1,10 +1,12 @@
-{% set active = "" %}
+{% set active = "users" %}
 {% extends 'base-settings.twig' %}
 {% block settings %}
+    <h1>Edit user</h1>
     <form method="POST" action="edit">
         {% include 'user-data-form.twig' with {
             'submit_name': 'Edit user',
             'user': user
         } only %}
+        <a href="{{ root }}/settings/users" class="btn btn-primary btn-red">Cancel</a>
     </form>
 {% endblock %}

@@ -1,14 +1,19 @@
 {% set active = "sensors" %}
 {% extends 'base-settings.twig' %}
 {% block settings %}
-    <span class="form-text text-muted">Add sensors</span>
-    <select onchange="formVisibility()" id="typeSelect">
-        {% for type in sensorsTypes %}
-            <option value="{{ type.name }}">{{ type.name }}</option>
-        {% endfor %}
-    </select>
+    <h1>Add sensors</h1>
+
+    <div class="form-group">
+        <label for="typeSelect">Type of sensor</label>
+        <select class="form-control" onchange="formVisibility()" id="typeSelect" name="typeSelect">
+            {% for type in sensorsTypes %}
+                <option value="{{ type.name }}">{{ type.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
     {% for type in sensorsTypes %}
-        <form class="addForm form-signin" id="form-{{ type.name }}" action="sensors/add" method="post">
+        <form class="addForm" id="form-{{ type.name }}" action="sensors/add" method="post">
             <input type="hidden" name="type" value="{{ type.name }}">
             <div class="form-group">
                 <label for="name">name</label>
@@ -20,9 +25,12 @@
                     <input type="{{ type }}" class="form-control" id="name" name="data[{{ name }}]">
                 </div>
             {% endfor %}
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-primary">Add</button>
         </form>
     {% endfor %}
+
+
+    <h1 style="margin-top: 16px">Sensors</h1>
     <table class="table">
         <thead class="thead-dark">
         <tr>
@@ -30,7 +38,8 @@
             <th scope="col">Name</th>
             <th scope="col">Type</th>
             <th scope="col">Categories</th>
-            <th scope="col">Action</th>
+            <th scope="col">Edit</th>
+            <th scope="col">Delete</th>
         </tr>
         </thead>
         <tbody>
@@ -41,7 +50,7 @@
                 <td>{{ s.type_name }}</td>
                 <td>
                     {% if s.categories %}
-                        <ul>
+                        <ul style="margin-bottom: 0">
                             {% for c in s.categories %}
                                 <li>{{ c.name }}</li>
                             {% endfor %}
@@ -51,12 +60,14 @@
                     {% endif %}
                 </td>
                 <td>
-                    <form action="sensors/{{ s.id }}/editCategories" method="get">
-                        <button type="submit" class="btn btn-primary">Edit Categories</button>
+                    <form action="sensors/{{ s.id }}/edit" method="get">
+                        <button type="submit" class="btn btn-primary">Edit</button>
                     </form>
+                </td>
+                <td>
                     <form action="sensors/delete" method="post">
                         <input type="hidden" name="id" value="{{ s.id }}">
-                        <button type="submit" class="btn btn-primary">Delete</button>
+                        <button type="submit" class="btn btn-primary btn-red">Delete</button>
                     </form>
                 </td>
             </tr>

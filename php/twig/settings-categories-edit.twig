@@ -1,7 +1,15 @@
 {% set active = "" %}
 {% extends 'base-settings.twig' %}
 {% block settings %}
+    <h1>Edit category</h1>
     <form action="?" method="post">
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" class="form-control" id="name" name="name" value="{{ name }}">
+        </div>
+
+        <h2>Users</h2>
+        <p>Select users that are authorized to view the sensors in this category</p>
         {% for u in users %}
             <input id="u-{{ u.id }}" type="checkbox" name="enabled[{{ u.id }}]" {% if u.belongs %} checked {% endif %}>
             <input type="hidden" name="users[]" value="{{ u.id }}">

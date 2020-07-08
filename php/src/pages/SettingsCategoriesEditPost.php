@@ -11,7 +11,7 @@ use PDO;
 use Rakit\Validation\Validation;
 use Rakit\Validation\Validator;
 
-class SettingsCategoriesEditUsersPost extends Page {
+class SettingsCategoriesEditPost extends Page {
 
     private $id;
 
@@ -25,8 +25,23 @@ class SettingsCategoriesEditUsersPost extends Page {
 
     protected function exec() {
         $pdo = DatabaseUtils::connect();
+        $name = $_POST["name"] ?? '';
         $users = $_POST["users"] ?? [];
         $enabled = $_POST["enabled"] ?? [];
+
+        //Edit name
+        if(trim($name) !== '') {
+            $stmt = $pdo->prepare("
+                UPDATE Category
+                SET name = ?
+                WHERE id = ?
+            ");
+            $stmt->bindValue(1, $name);
+            $stmt->bindValue(2, $this->id);
+            $stmt->execute();
+        }
+
+        //Edit users
         $stmtInsert = $pdo->prepare("
             INSERT IGNORE INTO UsersCategory(category, user)
             VALUES (?, ?)

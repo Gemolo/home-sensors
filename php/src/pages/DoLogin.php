@@ -26,7 +26,7 @@ class DoLogin extends Page {
               "errorMessage"=>"Wrong username or password"
           ]);
       } else {
-          setcookie("loginToken", $token, 0, "","kevingemolo.ddns.net", true);
+          setcookie("loginToken", $token, 0, "",Settings::domain(), true);
           header("Location: " . Settings::urlRoot());
       }
     }

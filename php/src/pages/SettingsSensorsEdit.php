@@ -11,7 +11,7 @@ use PDO;
 use Rakit\Validation\Validation;
 use Rakit\Validation\Validator;
 
-class SettingsSensorsEditCategories extends Page {
+class SettingsSensorsEdit extends Page {
 
     private $id;
 

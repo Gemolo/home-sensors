@@ -1,0 +1,25 @@
+{% set page = 'logout' %}
+{% extends 'base-logged-page.twig' %}
+{% block content %}
+    <form method="POST" id="form">
+        <h1>Logout</h1>
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" name="logoutAllDevices" id="logoutAllDevices">
+            <label class="form-check-label" for="logoutAllDevices">Logout all devices</label>
+        </div>
+        <button type="submit" class="btn btn-primary">Logout</button>
+    </form>
+
+    <style>
+        #form {
+            width: 100%;
+            max-width: 330px;
+            padding: 15px;
+            margin: auto;
+        }
+
+        #form > button {
+            margin-top: 8px;
+        }
+    </style>
+{% endblock %}

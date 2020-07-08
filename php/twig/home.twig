@@ -1,3 +1,4 @@
+{% set page = 'home' %}
 {% extends 'base-logged-page.twig' %}
 {% block content %}
     {% macro cell(s, root) %}
@@ -6,7 +7,7 @@
                 <img src="{{ root }}/static/img/{{ s.type }}.png" height="128px" class="card-img-top" alt="{{ s.name }}">
                 <div class="card-body">
                     <h5 class="card-title">{{ s.name }}</h5>
-                    <p class="card-text sens" id="sens-{{ s.id }}">N/A</p>
+                    <p class="card-text sens sens-{{ s.id }}">N/A</p>
                 </div>
             </div>
         </div>
@@ -28,7 +29,7 @@
 
 
     <style>
-        #sensori, .content {
+        #sensori {
             margin-top: 32px;
         }
 
@@ -48,7 +49,7 @@
                 url: "/sensori/api/sensors",
                 success: function (result) {
                     for (k in result) {
-                        p = $('#sens-' + k);
+                        p = $('.sens-' + k);
                         valore = result[k];
 
                         p.text(valore);
@@ -63,8 +64,8 @@
         }
 
         sensori();
-        /*setInterval(function () {
+        setInterval(function () {
             sensori();
-        }, 500);*/
+        }, 500);
     </script>
 {% endblock %}

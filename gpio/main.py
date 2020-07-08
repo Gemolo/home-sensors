@@ -10,8 +10,9 @@ def distance():
     transmitter = int(request.args.get("transmitter"))
     receiver = int(request.args.get("receiver"))
 
-    GPIO.setup(transmitter,  GPIO.OUT)
-    GPIO.setup(receiver,  GPIO.IN)
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(transmitter, GPIO.OUT)
+    GPIO.setup(receiver, GPIO.IN)
 
     # set Trigger to HIGH
     GPIO.output(transmitter, True)
@@ -37,7 +38,7 @@ def distance():
     # and divide by 2, because there and back
     distance = (TimeElapsed * 34300) / 2
  
-    return distance
+    return str(int(distance)) + " cm"
 
 
 def getPinValue(pin):

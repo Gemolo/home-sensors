@@ -11,7 +11,7 @@ use PDO;
 use Rakit\Validation\Validation;
 use Rakit\Validation\Validator;
 
-class SettingsSensorsEditCategoriesPost extends Page {
+class SettingsSensorsEditPost extends Page {
 
     private $id;
 
@@ -25,6 +25,7 @@ class SettingsSensorsEditCategoriesPost extends Page {
 
     protected function exec() {
         $pdo = DatabaseUtils::connect();
+
         $categories = $_POST["categories"] ?? [];
         $enabled = $_POST["enabled"] ?? [];
         $stmtInsert = $pdo->prepare("
@@ -39,12 +40,12 @@ class SettingsSensorsEditCategoriesPost extends Page {
         ");
         $stmtDelete->bindValue(1, $this->id);
 
-        foreach ( $categories as $category){
-            if(isset($enabled[(int)$category])){
-                $stmtInsert->bindValue(2, (int) $category);
+        foreach ($categories as $category) {
+            if (isset($enabled[(int)$category])) {
+                $stmtInsert->bindValue(2, (int)$category);
                 $stmtInsert->execute();
             } else {
-                $stmtDelete->bindValue(2, (int) $category);
+                $stmtDelete->bindValue(2, (int)$category);
                 $stmtDelete->execute();
             }
         }
