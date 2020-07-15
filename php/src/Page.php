@@ -20,9 +20,7 @@ abstract class Page {
             if ($validation->fails()) {
                 $errors = $validation->errors();
                 http_response_code(400);
-                echo "<pre>";
-                print_r($errors->firstOfAll());
-                echo "</pre>";
+                TwigUtils::renderError("Invalid parameters", array_values($errors->firstOfAll()));
             } else {
                 $this->exec();
             }

@@ -5,6 +5,7 @@ namespace HomeSensors\pages;
 
 
 use HomeSensors\DatabaseUtils;
+use HomeSensors\LoginUtilis;
 use HomeSensors\Page;
 use HomeSensors\TwigUtils;
 use HomeSensors\UserUtils;
@@ -12,22 +13,16 @@ use PDO;
 use Rakit\Validation\Validation;
 use Rakit\Validation\Validator;
 
-class SettingsUsersEditPost extends Page {
-
-    private $id;
-
-    public function __construct(int $id) {
-        $this->id = $id;
-    }
+class ProfilePost extends Page {
 
     protected function validation(Validator $validator): ?Validation {
         return null;
     }
 
     protected function exec() {
-        UserUtils::editUserFromPostData($this->id, true);
+        UserUtils::editUserFromPostData(LoginUtilis::login()['id'], LoginUtilis::login()['isAdmin'] === 1);
 
-        header("Location: " . \HomeSensors\Settings::urlRoot() . '/settings/users');
+        header("Location: " . \HomeSensors\Settings::urlRoot() . '/profile');
 
     }
 }

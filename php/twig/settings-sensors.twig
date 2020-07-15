@@ -16,13 +16,14 @@
         <form class="addForm" id="form-{{ type.name }}" action="sensors/add" method="post">
             <input type="hidden" name="type" value="{{ type.name }}">
             <div class="form-group">
-                <label for="name">name</label>
-                <input type="text" class="form-control" id="name" name="name">
+                <label for="{{ type.id }}-name">Name</label>
+                <input type="text" class="form-control" id="{{ type.id }}-name" name="name">
             </div>
-            {% for name, type in type.inputs %}
+            {% for input in type.inputs %}
+                {% set inputId = type.id ~ '-' ~ input.id %}
                 <div class="form-group">
-                    <label for="name">{{ name }}</label>
-                    <input type="{{ type }}" class="form-control" id="name" name="data[{{ name }}]">
+                    <label for="{{ inputId }}">{{ input.name }}</label>
+                    <input type="{{ input.type }}" class="form-control" id="{{ inputId }}" name="data[{{ input.id }}]">
                 </div>
             {% endfor %}
             <button type="submit" class="btn btn-primary">Add</button>

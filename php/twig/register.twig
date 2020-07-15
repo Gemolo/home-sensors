@@ -2,8 +2,10 @@
 {% block content %}
     <form class="form-signin" method="POST" action="{{ root }}/register">
         <h1>Register</h1>
+        <span id="error"></span>
         {% include 'user-data-form.twig' with {
-            'submit_name': 'Create user'
+            'submit_name': 'Create user',
+            'on_change': 'checkData()'
         } only %}
         <input type="hidden" name="token" value="{{ token }}">
     </form>
@@ -15,5 +17,35 @@
             flex-direction: column;
             width: 512px;
         }
+
+        #error {
+            color: red;
+        }
     </style>
+    <script>
+        function checkData() {
+            let username = $('#username').val();
+            let email = $('#email').val();
+            let password = $('#password').val();
+            let confirmPassword = $('#confirm_password').val();
+
+            let error = '';
+            if (username.length < 4) {
+                error = 'Username must be at least 4 characters';
+            } else if (!email.includes('@')) {
+                error = 'Please insert a valid email';
+            } else if (password.length < 6) {
+                error = 'Password must be at least 6 characters';
+            } else if (password !== confirmPassword) {
+                error = 'Passwords must match';
+            }
+            console.log(error);
+            $('#error').text(error);
+            $('#user-submit').prop('disabled', error !== '');
+        }
+
+        $(document).ready(() => {
+            checkData();
+        });
+    </script>
 {% endblock %}

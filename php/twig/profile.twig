@@ -1,0 +1,11 @@
+{% set page = 'profile' %}
+{% extends 'base-logged-page.twig' %}
+{% block content %}
+    <form class="form-signin" method="POST" action="?">
+        <h1>Edit profile</h1>
+        {% include 'user-data-form.twig' with {
+            'submit_name': 'Edit profile',
+            'user': logged_user
+        } %}
+    </form>
+{% endblock %}

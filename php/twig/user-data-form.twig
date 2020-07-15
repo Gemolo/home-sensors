@@ -1,28 +1,29 @@
+{% set onChange = on_change ? 'onchange="'~on_change~'" onkeypress="'~on_change~'"' : '' %}
 <div class="form-group">
     <label for="username">Username</label>
-    <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" {% if user.username %} disabled {% endif %}>
+    <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" {% if user.username %} disabled {% endif %} {{ onChange|raw }}>
 </div>
 
 <div class="form-group">
     <label for="email">Email address</label>
-    <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}">
+    <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" {{ onChange|raw }}>
 </div>
 <div class="form-group">
     <label for="password">Password</label>
-    <input type="password" class="form-control" id="password" name="password">
+    <input type="password" class="form-control" id="password" name="password" {{ onChange|raw }}>
 </div>
 <div class="form-group">
     <label for="confirm_password">Confirm password</label>
-    <input type="password" class="form-control" id="confirm_password" name="confirm_password">
+    <input type="password" class="form-control" id="confirm_password" name="confirm_password" {{ onChange|raw }}>
 </div>
 <div class="form-group">
     <label for="name">Complete Name</label>
-    <input type="text" class="form-control" id="name" name="name" value="{{ user.name }}">
+    <input type="text" class="form-control" id="name" name="name" value="{{ user.name }}" {{ onChange|raw }}>
 </div>
 {% if user.username %}
     <div class="form-check" style="margin-bottom: 8px">
-        <input type="checkbox" class="form-check-input" name="is_admin" id="isAdmin"  {% if user.isAdmin  %} checked {% endif %} {% if user.id == 1 %} disabled {% endif %}>
+        <input type="checkbox" class="form-check-input" name="is_admin" id="isAdmin"  {% if user.isAdmin %} checked {% endif %} {% if user.id == 1 or not logged_user.isAdmin %} disabled {% endif %} {{ onChange|raw }}>
         <label class="form-check-label" for="isAdmin">Is admin?</label>
     </div>
 {% endif %}
-<button type="submit" class="btn btn-primary">{{ submit_name }}</button>
+<button id="user-submit" type="submit" class="btn btn-primary">{{ submit_name }}</button>

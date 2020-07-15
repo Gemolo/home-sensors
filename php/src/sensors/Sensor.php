@@ -5,6 +5,7 @@ namespace HomeSensors\sensors;
 
 
 use HomeSensors\DatabaseUtils;
+use HomeSensors\SensorParam;
 use PDO;
 
 abstract class Sensor {
@@ -12,10 +13,12 @@ abstract class Sensor {
     private $id;
     private $name;
     private $categories;
+    private $paramData;
 
-    protected function __construct(int $id, string $name) {
+    protected function __construct(int $id, string $name, array $paramData) {
         $this->id = $id;
         $this->name = $name;
+        $this->paramData = $paramData;
     }
 
     public function getId(): int {
@@ -24,6 +27,10 @@ abstract class Sensor {
 
     public function getName(): string {
         return $this->name;
+    }
+
+    public function getParamData(string $key) {
+        return $this->paramData[$key] ?? null;
     }
 
     public function getCategories() {
@@ -43,30 +50,25 @@ abstract class Sensor {
     }
 
     public function getTwigData(bool $withCategories = true): array {
-        return array_merge($this->twigData(), [
+        return array_merge($this->paramData, [
             "name"       => $this->name,
             "id"         => $this->id,
-            "type"       => static::type(),
-            "type_name"  => static::name(),
+            "type"       => static::typeId(),
+            "type_name"  => static::typeName(),
             "categories" => $withCategories ? $this->getCategories() : null,
         ]);
     }
 
     public abstract function getSensorData(): ?string;
 
-    protected abstract function twigData(): array;
+    public abstract static function typeName(): string;
 
-    public abstract static function fromRow(array $row): Sensor;
+    public static abstract function typeId(): string;
 
-    protected abstract static function rowData(array $data): array;
-
-    public abstract static function createInputs(): array;
-
-    public abstract static function name(): string;
-
-    protected static abstract function type(): string;
-
-    protected static abstract function tableColumns(): array;
+    /**
+     * @return SensorParam[]
+     */
+    public static abstract function params(): array;
 
     public const CLASSES = [
         Sensor_Distance::class,
@@ -91,9 +93,13 @@ abstract class Sensor {
     public static function createTable(): void {
         $pdo = DatabaseUtils::connect();
         $table = static::tableName();
-        $type = static::type();
-        $columns = implode(',', static::tableColumns());
-        $stmt = $pdo->prepare($q="
+        $type = static::typeId();
+        $columns = [];
+        foreach (static::params() as $param) {
+            $columns[] = $param->id() . ' ' . $param->columnType();
+        }
+        $columns = implode(',', $columns);
+        $stmt = $pdo->prepare("
            CREATE TABLE IF NOT EXISTS `HomeSensors`.`$table` (
               `id` INT UNSIGNED NOT NULL,
               PRIMARY KEY (`id`),
@@ -131,7 +137,16 @@ abstract class Sensor {
     //endregion
 
     public static function create(string $name, array $data) {
-        $rowData = static::rowData($data);
+        $rowData = [];
+        foreach (static::params() as $param) {
+            $value = $data[$param->id()];
+            if ($param->checkValue($value)) {
+                $rowData[$param->id()] = $value;
+            } else {
+                throw new \LogicException('Invalid value of param ' . $param->name());
+            }
+        }
+
         $columns = implode(',', array_keys($rowData));
 
         $id = Sensor::createBase($name);
@@ -161,7 +176,11 @@ abstract class Sensor {
             $ret = [];
             $stmt->execute();
             foreach ($stmt->fetchAll() as $row) {
-                $ret[$row['id']] = static::fromRow($row);
+                $paramData = [];
+                foreach (static::params() as $param) {
+                    $paramData[$param->id()] = $row[$param->id()];
+                }
+                $ret[$row['id']] = new static($row['id'], $row['name'], $paramData);
             }
 
             return $ret;
@@ -173,9 +192,19 @@ abstract class Sensor {
     public static function types(): array {
         $ret = [];
         foreach (self::CLASSES as $class) {
+            $inputs = [];
+            foreach ($class::params() as $param) {
+                /** @var SensorParam $param */
+                $inputs[] = [
+                    'id'   => $param->id(),
+                    'name' => $param->name(),
+                    'type' => $param->inputType(),
+                ];
+            }
             $ret[] = [
-                "inputs" => $class::createInputs(),
-                "name"   => $class::name(),
+                "id"     => $class::typeId(),
+                "name"   => $class::typeName(),
+                "inputs" => $inputs,
             ];
         }
         return $ret;
@@ -183,7 +212,7 @@ abstract class Sensor {
 
     public static function getClassForTypeName(string $name): ?string {
         foreach (self::CLASSES as $class) {
-            if ($class::name() === $name) {
+            if ($class::typeName() === $name) {
                 return $class;
             }
         }

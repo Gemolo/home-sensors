@@ -3,12 +3,15 @@
 
     <nav class="nav nav-tabs">
         <a class="nav-link {% if page == 'home' %} active {% endif %}" href="{{ root }}">Sensori</a>
-        <a class="nav-link {% if page == 'settings' %} active {% endif %}" href="{{ root }}/settings/users">Settings</a>
-        <a class="nav-link {% if page == 'logout' %} active {% endif %}" href="{{ root }}/logout" style="margin-left: auto">Logout</a>
-
+        {% if logged_user.isAdmin %}
+            <a class="nav-link {% if page == 'settings' %} active {% endif %}"
+               href="{{ root }}/settings/users">Settings</a>
+        {% endif %}
+        <a class="nav-link {% if page == 'profile' %} active {% endif %}" href="{{ root }}/profile" style="margin-left: auto">{{ logged_user.username }}</a>
+        <a class="nav-link {% if page == 'logout' %} active {% endif %}" href="{{ root }}/logout">Logout</a>
     </nav>
     <style>
-        .content{
+        .content {
             margin: 32px;
         }
 

@@ -33,8 +33,17 @@ class SettingsSensorsEdit extends Page {
         ");
         $stmt->bindValue(1, $this->id);
         $stmt->execute();
-        TwigUtils::renderPage("settings-sensors-edit-categories.twig", "Edit Categories", [
-            "categories" => $stmt->fetchAll(PDO::FETCH_ASSOC),
+        $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $stmt = $pdo->prepare("SELECT name FROM Sensor WHERE id = ?");
+        $stmt->bindValue(1, $this->id);
+        $stmt->execute();
+        $name = $stmt->fetch(PDO::FETCH_ASSOC)['name'];
+
+
+        TwigUtils::renderPage("settings-sensors-edit.twig", "Edit Categories", [
+            "name" => $name,
+            "categories" => $categories,
         ]);
     }
 }

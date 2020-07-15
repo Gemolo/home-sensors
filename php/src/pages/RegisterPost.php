@@ -35,11 +35,17 @@ class RegisterPost extends Page {
             try {
                 $payload = RegisterUtils::verifyToken($token);
                 RegisterUtils::registerUser($_POST['username'], $_POST['email'], $_POST['password'], $_POST['name'] ?? null, $payload['admin'] ?? false);
-                header('Location: ' . \HomeSensors\Settings::urlRoot() . '/login');
+                header('Location: ' . \HomeSensors\Settings::urlRoot());
             } catch (ExpiredException $e) {
-                TwigUtils::renderPage('error.twig', 'Error', ['errorMessage' => 'Token has expired']);
+                TwigUtils::renderError('Error', 'Token has expired');
+            } catch (\PDOException $e) {
+                if ($e->getCode() === '23000') {
+                    TwigUtils::renderError('Error', 'Duplicate user');
+                } else {
+                    TwigUtils::renderError('Error', 'DB error: ' . $e->getCode());
+                }
             } catch (\Exception $e) {
-                TwigUtils::renderPage('error.twig', 'Error', ['errorMessage' => 'Token is invalid']);
+                TwigUtils::renderError('Error', 'Token is invalid');
             }
         }
     }

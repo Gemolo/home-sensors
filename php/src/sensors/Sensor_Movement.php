@@ -6,11 +6,11 @@ namespace HomeSensors\sensors;
 
 final class Sensor_Movement extends BaseSensor {
 
-    public static function name(): string {
+    public static function typeName(): string {
         return "Movement Sensor";
     }
 
-    protected static function type(): string {
+    public static function typeId(): string {
         return 'movement';
     }
 }

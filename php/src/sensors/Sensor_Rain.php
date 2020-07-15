@@ -6,11 +6,11 @@ namespace HomeSensors\sensors;
 
 final class Sensor_Rain extends BaseSensor {
 
-    public static function name(): string {
+    public static function typeName(): string {
         return "Rain Sensor";
     }
-    
-    protected static function type(): string {
+
+    public static function typeId(): string {
         return 'rain';
     }
 }

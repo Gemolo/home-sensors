@@ -1,14 +1,16 @@
 {% extends 'base-page.twig' %}
 {% block content %}
     <h1>Error</h1>
-    <p>{{ errorMessage }}</p>
+    {% if error_message is iterable %}
+        {% for msg in error_message %}
+            <p>{{ msg }}</p>
+        {% endfor %}
+    {% else %}
+        <p>{{ error_message }}</p>
+    {% endif %}
     <style>
-        .container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            width: 512px;
+        .content {
+            margin: 16px;
         }
     </style>
 {% endblock %}

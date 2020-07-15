@@ -25,6 +25,8 @@
     <h1>Sensori</h1>
     {% for c in categories %}
         {{ _self.category(c, root) }}
+    {% else %}
+        Non hai alcuna categoria di sensori abilitata. Chiedi ad un amministratore di farlo.
     {% endfor %}
 
 

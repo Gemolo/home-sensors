@@ -25,9 +25,23 @@ class SettingsSensorsEditPost extends Page {
 
     protected function exec() {
         $pdo = DatabaseUtils::connect();
-
+        $name = $_POST["name"] ?? '';
         $categories = $_POST["categories"] ?? [];
         $enabled = $_POST["enabled"] ?? [];
+
+        //Edit name
+        if(trim($name) !== '') {
+            $stmt = $pdo->prepare("
+                UPDATE Sensor
+                SET name = ?
+                WHERE id = ?
+            ");
+            $stmt->bindValue(1, $name);
+            $stmt->bindValue(2, $this->id);
+            $stmt->execute();
+        }
+
+        //Edit categories
         $stmtInsert = $pdo->prepare("
             INSERT IGNORE INTO SensorCategory(sensor, category)
             VALUES (?, ?)
