@@ -5,6 +5,7 @@ namespace HomeSensors\sensors;
 
 
 use HomeSensors\DatabaseUtils;
+use HomeSensors\InvalidSensorParamException;
 use HomeSensors\SensorParam;
 use PDO;
 
@@ -136,31 +137,39 @@ abstract class Sensor {
 
     //endregion
 
+    /**
+     * @param array $data
+     * @throws InvalidSensorParamException
+     */
     public static function create(string $name, array $data) {
         $rowData = [];
         foreach (static::params() as $param) {
             $value = $data[$param->id()];
-            if ($param->checkValue($value)) {
-                $rowData[$param->id()] = $value;
-            } else {
-                throw new \LogicException('Invalid value of param ' . $param->name());
-            }
+            $param->checkValue($value);
+            $rowData[$param->id()] = $value;
         }
 
         $columns = implode(',', array_keys($rowData));
 
-        $id = Sensor::createBase($name);
-
         $pdo = DatabaseUtils::connect();
         $table = static::tableName();
-        $stmt = $pdo->prepare("INSERT INTO $table(id,$columns) VALUES (?" . str_repeat(',?', \count($rowData)) . ")");
 
-        $stmt->bindValue(1, $id);
-        $i = 2;
-        foreach ($rowData as $d) {
-            $stmt->bindValue($i++, $d);
+        try {
+            $pdo->beginTransaction();
+            $id = Sensor::createBase($name);
+
+            $stmt = $pdo->prepare("INSERT INTO $table(id,$columns) VALUES (?" . str_repeat(',?', \count($rowData)) . ")");
+            $stmt->bindValue(1, $id);
+            $i = 2;
+            foreach ($rowData as $d) {
+                $stmt->bindValue($i++, $d);
+            }
+            $stmt->execute();
+            $pdo->commit();
+        } catch (\PDOException $e) {
+            $pdo->rollBack();
+            throw $e;
         }
-        $stmt->execute();
     }
 
     protected static function loadSensors(): array {
@@ -210,9 +219,9 @@ abstract class Sensor {
         return $ret;
     }
 
-    public static function getClassForTypeName(string $name): ?string {
+    public static function getClassForType(string $id): ?string {
         foreach (self::CLASSES as $class) {
-            if ($class::typeName() === $name) {
+            if ($class::typeId() === $id) {
                 return $class;
             }
         }
@@ -233,4 +242,16 @@ abstract class Sensor {
         return $ret;
     }
 
+    public static function gpioCheckCallable(): callable {
+        return function ($value) {
+            if ($value === null || $value === '') {
+                return 'must be present';
+            } elseif (!is_numeric($value)) {
+                return 'must be an integer';
+            } else {
+                $value = (int)$value;
+                return $value > 0 ? null : 'must be greater than 0';
+            }
+        };
+    }
 }

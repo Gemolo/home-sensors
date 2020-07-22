@@ -4,10 +4,17 @@
     <h1>Add category</h1>
     <form action="categories/add" method="post">
         <div class="form-group">
-            <label for="name">Name of category</label>
-            <input type="text" class="form-control" id="name" name="name">
+            <label for="category-name-input">Name of category</label>
+            <input type="text" class="form-control" id="category-name-input" name="name" onchange="recheckAddCategory()" onkeydown="recheckAddCategory()">
         </div>
-        <button type="submit" class="btn btn-primary">Add</button>
+        <button id="add-category-button" type="submit" class="btn btn-primary" disabled>Add</button>
+        <script>
+            function recheckAddCategory() {
+                let catName = $('#category-name-input').val();
+                let addButton = $('#add-category-button');
+                addButton.prop('disabled', catName.length <= 0);
+            }
+        </script>
     </form>
 
     <h1 style="margin-top: 16px">Categories</h1>

@@ -5,6 +5,8 @@ namespace HomeSensors\pages;
 
 
 use HomeSensors\DatabaseUtils;
+use HomeSensors\InvalidEmailException;
+use HomeSensors\InvalidPasswordException;
 use HomeSensors\LoginUtilis;
 use HomeSensors\Page;
 use HomeSensors\TwigUtils;
@@ -20,7 +22,15 @@ class ProfilePost extends Page {
     }
 
     protected function exec() {
-        UserUtils::editUserFromPostData(LoginUtilis::login()['id'], LoginUtilis::login()['isAdmin'] === 1);
+        try {
+            UserUtils::editUserFromPostData(LoginUtilis::login()['id'], LoginUtilis::login()['isAdmin'] === 1);
+        } catch (InvalidEmailException $e) {
+            TwigUtils::renderError('Edit user', 'Invalid email: ' . $e->getMessage());
+            return;
+        } catch (InvalidPasswordException $e) {
+            TwigUtils::renderError('Edit user', 'Invalid password: ' . $e->getMessage());
+            return;
+        }
 
         header("Location: " . \HomeSensors\Settings::urlRoot() . '/profile');
 

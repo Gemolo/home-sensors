@@ -10,12 +10,9 @@ final class Sensor_Distance extends Sensor {
 
 
     public static function params(): array {
-        $gpioCheck = function ($value) {
-            return is_int($value) && $value > 0;
-        };
         return [
-            new SensorParam('transmitter_gpio', 'Transmitter GPIO port', 'INT UNSIGNED NOT NULL', 'number', $gpioCheck),
-            new SensorParam('receiver_gpio', 'Receiver GPIO port', 'INT UNSIGNED NOT NULL', 'number', $gpioCheck),
+            new SensorParam('transmitter_gpio', 'Transmitter GPIO port', 'INT UNSIGNED NOT NULL', 'number', Sensor::gpioCheckCallable()),
+            new SensorParam('receiver_gpio', 'Receiver GPIO port', 'INT UNSIGNED NOT NULL', 'number', Sensor::gpioCheckCallable()),
         ];
     }
 

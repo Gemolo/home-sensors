@@ -22,6 +22,7 @@ class LoginPost extends Page {
     protected function exec() {
         $token = LoginUtilis::generateToken($_POST["username"], $_POST["password"]);
         if ($token === null) {
+            http_response_code(401);
             TwigUtils::renderError("Authenticator Error", "Wrong username or password");
         } else {
             setcookie("loginToken", $token, 0, "", Settings::domain(), true);

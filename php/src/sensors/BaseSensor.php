@@ -12,9 +12,7 @@ abstract class BaseSensor extends Sensor {
 
     public static function params(): array {
         return [
-            new SensorParam('gpio', 'GPIO port', 'INT UNSIGNED NOT NULL', 'number', function($value) {
-                return is_int($value) && $value > 0;
-            })
+            new SensorParam('gpio', 'GPIO port', 'INT UNSIGNED NOT NULL', 'number',Sensor::gpioCheckCallable())
         ];
     }
 
@@ -31,6 +29,4 @@ abstract class BaseSensor extends Sensor {
     protected static function url() : string {
         return static::typeId();
     }
-
-
 }

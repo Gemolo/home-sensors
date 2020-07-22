@@ -15,7 +15,7 @@ class SettingsCategoriesAdd extends Page {
 
     protected function validation(Validator $validator): ?Validation {
         return $validator->make($_POST, [
-            'name'             => 'required',
+            'name' => 'required',
         ]);
     }
 
@@ -24,12 +24,19 @@ class SettingsCategoriesAdd extends Page {
         $name = $_POST["name"];
 
         $pdo = DatabaseUtils::connect();
-        $stmt = $pdo->prepare("
-            INSERT INTO Category(name) VALUES (?)
-        ");
+        $stmt = $pdo->prepare("INSERT INTO Category(name) VALUES (?)");
         $stmt->bindValue(1, $name);
-        $stmt->execute();
-
+        try {
+            $stmt->execute();
+        } catch (\PDOException $e) {
+            if ($e->getCode() === '23000') {
+                http_response_code(409);
+                TwigUtils::renderError('Add category', 'A category with the same name already exists!');
+                return;
+            } else {
+                throw $e;
+            }
+        }
         header("Location: " . \HomeSensors\Settings::urlRoot() . '/settings/categories');
     }
 }

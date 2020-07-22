@@ -40,7 +40,7 @@ class RegisterPost extends Page {
                 TwigUtils::renderError('Error', 'Token has expired');
             } catch (\PDOException $e) {
                 if ($e->getCode() === '23000') {
-                    TwigUtils::renderError('Error', 'Duplicate user');
+                    TwigUtils::renderError('Error', 'An user with the same username or email already exists');
                 } else {
                     TwigUtils::renderError('Error', 'DB error: ' . $e->getCode());
                 }

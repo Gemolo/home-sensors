@@ -5,6 +5,7 @@ namespace HomeSensors\pages;
 
 
 use HomeSensors\DatabaseUtils;
+use HomeSensors\InvalidSensorParamException;
 use HomeSensors\Page;
 use HomeSensors\sensors\Sensor;
 use HomeSensors\TwigUtils;
@@ -28,10 +29,28 @@ class SettingsSensorsAdd extends Page {
         $name = $_POST["name"];
         $data = $_POST["data"];
 
-        $sensorClass = Sensor::getClassForTypeName($type);
+        /** @var Sensor $sensorClass */
+        $sensorClass = Sensor::getClassForType($type);
+        if ($sensorClass === null) {
+            http_response_code(400);
+            return;
+        }
 
         $sensorClass::createTable();
-        $sensorClass::create($name, $data);
+        try {
+            $sensorClass::create($name, $data);
+        } catch (\PDOException $e) {
+            if ($e->getCode() === '23000') {
+                TwigUtils::renderError('Add sensor', 'A sensor with the same name already exists');
+                return;
+            } else {
+                throw $e;
+            }
+        } catch (InvalidSensorParamException $e) {
+            http_response_code(400);
+            TwigUtils::renderError('Add sensor', $e->getMessage());
+            return;
+        }
 
         header("Location: " . \HomeSensors\Settings::urlRoot() . '/settings/sensors');
     }

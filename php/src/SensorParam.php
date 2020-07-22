@@ -36,7 +36,13 @@ final class SensorParam {
         return $this->inputType;
     }
 
-    public function checkValue($value) : bool {
-        return ($this->checkValue)($value);
+    /**
+     * @throws InvalidSensorParamException
+     */
+    public function checkValue($value): void {
+        $msg = ($this->checkValue)($value);
+        if ($msg !== null) {
+            throw new InvalidSensorParamException('Invalid value for param "' . $this->name . '": ' . $msg);
+        }
     }
 }

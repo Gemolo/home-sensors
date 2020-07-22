@@ -7,29 +7,37 @@
         <label for="typeSelect">Type of sensor</label>
         <select class="form-control" onchange="formVisibility()" id="typeSelect" name="typeSelect">
             {% for type in sensorsTypes %}
-                <option value="{{ type.name }}">{{ type.name }}</option>
+                <option value="{{ type.id }}">{{ type.name }}</option>
             {% endfor %}
         </select>
     </div>
 
     {% for type in sensorsTypes %}
-        <form class="addForm" id="form-{{ type.name }}" action="sensors/add" method="post">
-            <input type="hidden" name="type" value="{{ type.name }}">
+        <form class="addForm" id="form-{{ type.id }}" action="sensors/add" method="post">
+            <input type="hidden" name="type" value="{{ type.id }}">
             <div class="form-group">
                 <label for="{{ type.id }}-name">Name</label>
-                <input type="text" class="form-control" id="{{ type.id }}-name" name="name">
+                <input type="text" class="form-control" id="{{ type.id }}-name" name="name"
+                       onchange="checkSensorData({{ type.id|json_encode }})" onkeydown="checkSensorData({{ type.id|json_encode }})">
             </div>
             {% for input in type.inputs %}
                 {% set inputId = type.id ~ '-' ~ input.id %}
                 <div class="form-group">
                     <label for="{{ inputId }}">{{ input.name }}</label>
-                    <input type="{{ input.type }}" class="form-control" id="{{ inputId }}" name="data[{{ input.id }}]">
+                    <input type="{{ input.type }}" class="form-control" id="{{ inputId }}" name="data[{{ input.id }}]"
+                           onchange="checkSensorData({{ type.id|json_encode }})" onkeydown="checkSensorData({{ type.id|json_encode }})">
                 </div>
             {% endfor %}
-            <button type="submit" class="btn btn-primary">Add</button>
+            <button id="{{ type.id }}-submit" type="submit" class="btn btn-primary" disabled>Add</button>
+
         </form>
     {% endfor %}
-
+    <script>
+        function checkSensorData(type) {
+            let name = $('#' + type + '-name').val();
+            $('#' + type + '-submit').prop('disabled', name === 0);
+        }
+    </script>
 
     <h1 style="margin-top: 16px">Sensors</h1>
     <table class="table">
@@ -81,8 +89,7 @@
             let select = document.getElementById("typeSelect");
             let type = select.options[select.selectedIndex].value;
             let forms = document.getElementsByClassName("addForm");
-            for (k in forms) {
-                let form = forms[k];
+            for (form of forms) {
                 if (form.id === "form-" + type) {
                     form.style.display = "block";
                 } else {
