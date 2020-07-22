@@ -1,7 +1,7 @@
 version: '3'
 services:
-
   gpio:
+    container_name: home-sensors-gpio-connector
     build:
       context: gpio
     ports:
@@ -14,6 +14,7 @@ services:
       - /dev/gpiomem:/dev/gpiomem
 
   php-fpm:
+    container_name: home-sensors-backend
     build:
       context: php-fpm
     ports:
@@ -21,8 +22,12 @@ services:
     volumes:
       - ./php:/var/www
       - /sys:/sys
+    environment:
+      - HOMESENSORS_DOMAIN=kevingemolo.ddns.net
+      - HOMESENSORS_URL_ROOT=/sensori
 
   nginx:
+    container_name: home-sensors-webserver
     image: nginx:alpine
     ports:
       - 4561:80
@@ -37,6 +42,7 @@ services:
       - db
 
   db:
+    container_name: home-sensors-db
     image: jsurf/rpi-mariadb
     restart: always
     environment:
@@ -46,5 +52,6 @@ services:
       - ./mysql/db:/var/lib/mysql
 
   checker:
+    container_name: home-sensors-checker
     build:
       context: checker
