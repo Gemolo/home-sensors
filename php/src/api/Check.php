@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace HomeSensors\api;
 
+use HomeSensors\LoginUtilis;
 use HomeSensors\Page;
 use HomeSensors\PushUtils;
 use Rakit\Validation\Validation;
@@ -22,47 +23,29 @@ class Check extends Page {
             $obj = (json_decode($response));
 
         }
+        //https://pusher.com/docs/beams/concepts/authenticated-users
         if ($obj->fuoco === true) {
-            PushUtils::getClient()->publishToInterests(
-                ["sensori"],
-                [
-                    "fcm" => [
-                        "notification" => [
-                            "title" => "Fuoco",
-                            "body"  => "Stai andando a fuoco",
-                        ],
-                    ],
-                ],
-                );
-            echo "notifica inviata";
+            self::sendPush('Fuoco', 'Stai andando a fuoco');
         }
         if ($obj->gas === true) {
-            PushUtils::getClient()->publishToInterests(
-                ["sensori"],
-                [
-                    "fcm" => [
-                        "notification" => [
-                            "title" => "Gas",
-                            "body"  => "C'è del gas in casa",
-                        ],
-                    ],
-                ],
-                );
-            echo "notifica inviata";
+            self::sendPush('Gas', 'C\'è del gas in casa');
         }
         if ($obj->pioggia === true) {
-            PushUtils::getClient()->publishToInterests(
-                ["sensori"],
-                [
-                    "fcm" => [
-                        "notification" => [
-                            "title" => "Pioggia",
-                            "body"  => "Sta piovendo",
-                        ],
+            self::sendPush('Pioggia', 'Sta piovendo');
+        }
+    }
+
+    public static function sendPush(string $title, string $message) {
+        PushUtils::getClient()->publishToUsers(
+            ['1'], //TODO selzionare utenti
+            [
+                "fcm" => [
+                    "notification" => [
+                        "title" => $title,
+                        "body"  => $message,
                     ],
                 ],
-                );
-            echo "notifica inviata";
-        }
+            ]
+        );
     }
 }

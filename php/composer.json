@@ -14,14 +14,15 @@
     }
   },
   "require": {
-    "rakit/validation" : "^1",
-    "ext-curl": "*",
-    "klein/klein": "^2",
     "twig/twig": "^2.0",
+    "klein/klein": "^2",
+    "rakit/validation" : "^1",
+    "firebase/php-jwt": "^5",
+    "pusher/pusher-push-notifications": "^1.0",
+
     "php": "^7.3",
     "ext-pdo": "*",
-    "pusher/pusher-push-notifications": "^1.0",
     "ext-json": "*",
-    "firebase/php-jwt": "^5"
+    "ext-curl": "*"
   }
 }

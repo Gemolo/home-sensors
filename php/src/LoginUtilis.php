@@ -14,7 +14,7 @@ class LoginUtilis {
 
     public static function generateToken(string $username, string $passwd): ?string {
         $pdo = DatabaseUtils::connect();
-        $stmt = $pdo->prepare("SELECT password, passwordIteration from User where username = ?");
+        $stmt = $pdo->prepare("SELECT id, password, passwordIteration from User where username = ?");
         $stmt->bindValue(1, $username);
         $stmt->execute();
         $row = $stmt->fetch();
@@ -23,7 +23,7 @@ class LoginUtilis {
             if (password_verify($passwd, $pass)) {
                 $payload = [
                     "iat"     => time(),
-                    "user"    => $username,
+                    "user_id" => $row['id'],
                     "pw_iter" => $row["passwordIteration"],
                 ];
                 return JWT::encode($payload, self::JWTKey, 'HS256');
@@ -38,10 +38,10 @@ class LoginUtilis {
             if ($token !== null) {
                 $payload = self::verifyToken($token);
                 if ($payload !== null) {
-                    [$username, $iteration] = $payload;
+                    [$userId, $iteration] = $payload;
                     $pdo = DatabaseUtils::connect();
-                    $stmt = $pdo->prepare("SELECT * from User where username = ? AND passwordIteration=?");
-                    $stmt->bindValue(1, $username);
+                    $stmt = $pdo->prepare("SELECT * from User where id = ? AND passwordIteration=?");
+                    $stmt->bindValue(1, $userId);
                     $stmt->bindValue(2, $iteration);
                     $stmt->execute();
                     $fetch = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -65,7 +65,8 @@ class LoginUtilis {
     private static function verifyToken(string $token): ?array {
         try {
             $payload = JWT::decode($token, self::JWTKey, ["HS256"]);
-            return [$payload->user, $payload->pw_iter];
+
+            return [$payload->user_id, $payload->pw_iter];
         } catch (\Exception $e) {
             return null;
         }

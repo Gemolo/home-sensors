@@ -12,6 +12,7 @@ $klein = new \Klein\Klein();
 $klein->respond('GET', '/api/sensors', new \HomeSensors\api\Sensors());
 //$klein->respond('GET', '/api/notify', new \HomeSensors\api\Notify());
 $klein->respond('GET', '/api/check', new \HomeSensors\api\Check());
+$klein->respond('GET', '/api/beams-auth', new \HomeSensors\api\BeamsAuth());
 
 $klein->respond('GET', '/register', new \HomeSensors\pages\Register());
 $klein->respond('POST', '/register', new \HomeSensors\pages\RegisterPost());
