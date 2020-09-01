@@ -37,4 +37,8 @@ final class Sensor_Distance extends Sensor {
         }
         return null;
     }
+
+    public function isTriggered(): ?bool {
+        return false;
+    }
 }

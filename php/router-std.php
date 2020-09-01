@@ -26,6 +26,7 @@ $klein->respond('POST', '/profile', new \HomeSensors\pages\ProfilePost());
 
 if (LoginUtilis::isAdmin()) {
     $klein->respond('POST', '/api/generate_register_token', new \HomeSensors\api\GenerateRegisterToken());
+    $klein->respond('POST', '/api/test_notification', new \HomeSensors\api\TestNotification());
 
     //Categorie
     $klein->respond('GET', '/settings/categories', new \HomeSensors\pages\SettingsCategories());

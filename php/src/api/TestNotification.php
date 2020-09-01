@@ -8,24 +8,25 @@ use HomeSensors\PushUtils;
 use Rakit\Validation\Validation;
 use Rakit\Validation\Validator;
 
-class Notify extends Page {
+class TestNotification extends Page {
 
     protected function validation(Validator $validator): ?Validation {
-        return null;
+        return $validator->make($_POST, [
+            'user_id' => 'required|numeric',
+        ]);
     }
 
     protected function exec() {
-        PushUtils::getClient()->publishToInterests(
-            ["sensori"],
+        PushUtils::getClient()->publishToUsers(
+            [(string)$_POST['user_id']],
             [
                 "fcm" => [
                     "notification" => [
-                        "title" => "Prova",
-                        "body" => "Notifica di prova"
+                        "title" => 'Test notification',
+                        "body"  => 'Test message',
                     ],
                 ],
-            ],
-            );
-        echo "notifica inviata";
+            ]
+        );
     }
 }

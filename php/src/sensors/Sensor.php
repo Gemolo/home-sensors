@@ -62,6 +62,8 @@ abstract class Sensor {
 
     public abstract function getSensorData(): ?string;
 
+    public abstract function isTriggered(): ?bool;
+
     public abstract static function typeName(): string;
 
     public static abstract function typeId(): string;

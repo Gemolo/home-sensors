@@ -46,10 +46,11 @@
                 <td>{{ u.email }}</td>
                 <td>{{ u.name }}</td>
                 <td>{% if u.isAdmin %} Yes {% else %} No {% endif %}</td>
-                <td>
-                    <form action="users/{{ u.id }}/edit" method="get">
+                <td style="display: flex">
+                    <form style="display: inline" action="users/{{ u.id }}/edit" method="get">
                         <button type="submit" class="btn btn-primary">Edit</button>
                     </form>
+                    <button style="margin-left: 8px" class="btn btn-primary btn-orange" onclick="sendTestNotification({{ u.id }})">Send test notification</button>
                 </td>
             </tr>
         {% endfor %}
@@ -92,6 +93,19 @@
                         });
                     });
                     $('#goToButton').attr('href', link);
+                }
+            });
+        }
+        
+        function sendTestNotification(userId) {
+            $.ajax({
+                type: 'POST',
+                url: '{{ root }}/api/test_notification',
+                data: {
+                    'user_id': userId
+                },
+                success: function (r) {
+                    alert("Notification sent");
                 }
             });
         }

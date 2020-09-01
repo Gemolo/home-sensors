@@ -26,6 +26,11 @@ abstract class BaseSensor extends Sensor {
         return null;
     }
 
+    public function isTriggered(): ?bool {
+        $data = $this->getSensorData();
+        return strcasecmp($data, 'true') === 0;
+    }
+
     protected static function url() : string {
         return static::typeId();
     }
