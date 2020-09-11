@@ -7,6 +7,7 @@
             'submit_name': 'Edit user',
             'user': user
         } %}
-        <a href="{{ root }}/settings/users" class="btn btn-primary btn-red">Cancel</a>
+        <a href="{{ root }}/settings/users" class="btn btn-primary btn-gray">Cancel</a>
+        <a href="{{ root }}/settings/users/{{ user.id }}/delete" class="btn btn-primary btn-red">Delete user</a>
     </form>
 {% endblock %}

@@ -22,7 +22,7 @@ class GenerateRegisterToken extends Page {
     protected function exec() {
         $hours = min(max(1, (int) $_POST['hours']), 168);
 
-        $token = RegisterUtils::generateToken($hours, $_POST['will_be_admin'] === true);
+        $token = RegisterUtils::generateToken($hours, $_POST['will_be_admin'] === "true");
 
         echo json_encode($token);
     }

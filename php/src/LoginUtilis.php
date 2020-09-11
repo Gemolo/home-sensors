@@ -18,7 +18,7 @@ class LoginUtilis {
         $stmt->bindValue(1, $username);
         $stmt->execute();
         $row = $stmt->fetch();
-        if ($row !== null) {
+        if (is_array($row)) {
             $pass = $row["password"];
             if (password_verify($passwd, $pass)) {
                 $payload = [

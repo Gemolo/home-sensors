@@ -23,6 +23,10 @@ $klein->respond('POST', '/logout', new \HomeSensors\pages\LogoutPost());
 $klein->respond('GET', '/profile', new \HomeSensors\pages\Profile());
 $klein->respond('POST', '/profile', new \HomeSensors\pages\ProfilePost());
 
+$klein->respond('GET', '/profile/delete', new \HomeSensors\pages\DeleteUser(LoginUtilis::login()['id'], \HomeSensors\Settings::urlRoot() . '/profile'));
+$klein->respond('POST', '/profile/delete', new \HomeSensors\pages\DoDeleteUser(LoginUtilis::login()['id'], \HomeSensors\Settings::urlRoot()));
+
+
 
 if (LoginUtilis::isAdmin()) {
     $klein->respond('POST', '/api/generate_register_token', new \HomeSensors\api\GenerateRegisterToken());
@@ -68,6 +72,17 @@ if (LoginUtilis::isAdmin()) {
     $klein->respond('POST', '/settings/users/[i:id]/edit', function ($request) {
         $id = (int)$request->param("id");
         $page = new \HomeSensors\pages\SettingsUsersEditPost($id);
+        $page();
+    });
+
+    $klein->respond('GET', '/settings/users/[i:id]/delete', function ($request) {
+        $id = (int)$request->param("id");
+        $page = new \HomeSensors\pages\DeleteUser($id, \HomeSensors\Settings::urlRoot() . '/settings/users/' . $id . '/edit');
+        $page();
+    });
+    $klein->respond('POST', '/settings/users/[i:id]/delete', function ($request) {
+        $id = (int)$request->param("id");
+        $page = new \HomeSensors\pages\DoDeleteUser($id, \HomeSensors\Settings::urlRoot() . '/settings/users');
         $page();
     });
 }
