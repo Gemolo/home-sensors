@@ -23,7 +23,7 @@ services:
       - ./php:/var/www
       - /sys:/sys
     environment:
-      - HOMESENSORS_DOMAIN=kevingemolo.ddns.net
+      - HOMESENSORS_DOMAIN=
       - HOMESENSORS_URL_ROOT=/sensori
 
   nginx:
@@ -46,8 +46,8 @@ services:
     image: jsurf/rpi-mariadb
     restart: always
     environment:
-      - MYSQL_ROOT_PASSWORD=sensori
-      - MYSQL_DATABASE=HomeSensors
+      - MYSQL_ROOT_PASSWORD=
+      - MYSQL_DATABASE=
     volumes:
       - ./mysql/db:/var/lib/mysql
 
